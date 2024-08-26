@@ -1,0 +1,63 @@
+import { Ability } from "../combat/Ability";
+import { Character } from "../game-objects/Character";
+
+export class CharactersManager{
+    /**
+     * 
+     * @param {Character} character 
+     * @param {{x:number, y:number}} vector 
+     */
+    static pointerDownMove(character:Character, vector:Matter.Vector){
+        character.idle = false;
+        character.changeDirectionInput(vector)
+    }
+
+    /**
+     * 
+     * @param {Character} character
+     * @param {Ability} ability
+     */
+    static useQ(character:Character, ability:Ability, direction:string, clock:any){
+        character.ability= "Q"
+        character.attacking = true
+        character.idle = false
+        ability.activate();
+        character.hitWithQ(direction);
+        clock.setTimeout(()=>{
+            ability.available = true;
+        }, ability.cooldown - 100)
+
+        clock.setTimeout(()=>{
+            character.ability = "Q"
+            character.attacking = false
+        }, (1/ability.speed)*ability.frames*1000)
+    }
+
+    /**
+     * 
+     * @param {Character} character 
+     * @param {{x:number, y:number}} direction 
+     */
+    static useW(character:Character, direction:Matter.Vector, clock:any){
+        character.attacking = true;
+        character.idle = false;
+        character.abilities[1].activate()
+        character.ability = "W"
+        character.WAction(direction)
+        //character.changeDirectionInput(direction);
+        //character.speed = 120;
+
+        clock.setTimeout(()=>{
+            character.abilities[1].available = true
+        }, character.abilities[1].cooldown - 100)
+
+        clock.setTimeout(()=>{
+            character.ability = ""
+            character.idle = true
+            character.attacking = false
+            character.abilities[1].deactivate()
+            // character.speed = 40;
+        }, (1/character.abilities[1].speed)*character.abilities[1].frames*1000)
+
+    }
+}
