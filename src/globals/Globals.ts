@@ -7,6 +7,9 @@ export class Globals{
 
     static collideGroups = {
         abilities: 1,
-        enemies: 2
+        enemies: 2,
+        objects: 4
     }
+
+    static GAME_ENTITY = "gameEntity"
 }

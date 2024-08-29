@@ -1,22 +1,19 @@
 import { Room, Client } from "@colyseus/core";
 import { RoomState } from "./schema/RoomState";
 import { getTime } from "../utils/Functions";
-import { Engine } from "matter-js";
-import Matter from "matter-js";
 import { scytheGirlAbilities } from "../utils/HabilitiesGeneratos";
 import { WorldManager } from "../managers/WorldManager";
 import { CharactersManager } from "../managers/CharactersManager";
 import { Enemy } from "../game-objects/Enemy";
 import { Character } from "../game-objects/Character";
-import { QAbility } from "../combat/scythe-girl/QAbility";
-import { WAbility } from "../combat/scythe-girl/WAbility";
 import { ICharacter } from "../interfaces/Character";
 import { IEnemy } from "../interfaces/Enemy";
+import { Vector2 } from "../interfaces/Vector2";
+import SAT from "sat";
 
 export class MyRoom extends Room<RoomState> {
 
     maxClients: 10;
-    engine: Engine;
     worldManager: WorldManager;
 
     onCreate (options: any) {
@@ -25,15 +22,15 @@ export class MyRoom extends Room<RoomState> {
         this.autoDispose = false;
         this.clock.start();
 
-        this.onMessage("wk", (client, message:Matter.Vector) => {
+        this.onMessage("wk", (client, message:Vector2) => {
             this.walk(client, message)
         });
 
-        this.onMessage("q", (client, message:{direction:Matter.Vector, weaponDirection:string})=>{
+        this.onMessage("q", (client, message:{direction:Vector2, weaponDirection:string})=>{
             this.useQ(client, message.direction, message.weaponDirection)
         })
 
-        this.onMessage("w", (client, direction:Matter.Vector)=>{
+        this.onMessage("w", (client, direction:Vector2)=>{
             this.useW(client, direction)
         })
 
@@ -41,37 +38,39 @@ export class MyRoom extends Room<RoomState> {
             client.send("ping")
         })
 
-        const Engine = Matter.Engine
-        const Composite = Matter.Composite;
-
-        this.engine = Engine.create()
-        this.engine.gravity.x = 0;
-        this.engine.gravity.y = 0;
 
         this.worldManager = new WorldManager();
 
-        new Enemy(0.4, 320, 320, [], "ghost", this.engine, this, this.worldManager)
-        new Enemy(0.4, 320, 324,[], "ghost1", this.engine, this, this.worldManager)
-        new Enemy(0.4, 320, 328, [], "ghost2", this.engine, this, this.worldManager)
-        new Enemy(0.4, 320, 334, [], "ghost3", this.engine, this, this.worldManager)
+        new Enemy(0.035, 320, 320, [], "ghost", this, this.worldManager)
+        new Enemy(0.035, 320, 324,[], "ghost1", this, this.worldManager)
+        new Enemy(0.035, 320, 328, [], "ghost2", this, this.worldManager)
+        new Enemy(0.035, 320, 334, [], "ghost3", this, this.worldManager)
         console.log(this.state.enemies)
 
         this.setSimulationInterval((delta)=>{
-
             this.worldManager.players.forEach((c:Character,k)=>{
-                c.update();
+                c.update(delta);
                 c.abilities.forEach(a => a.update())
             })
 
             this.worldManager.enemies.forEach((e:Enemy)=>{
-                e.update()
+                e.update(delta)
             })
-            
-            Matter.Engine.update(this.engine, delta)
-        })
+
+            this.worldManager.players.forEach(c=>{
+                this.worldManager.enemies.forEach(e=>{
+                    if(SAT.testPolygonPolygon(e.box.toPolygon(), c.box.toPolygon())){
+                        let new_direction = (new SAT.Vector(c.position.x-e.position.x, c.position.y - e.position.y)).normalize();
+                        c.position.x += new_direction.x * c.speed * delta
+                        c.position.y += new_direction.y * c.speed * delta
+                        console.log("collisioning")
+                    }
+                })
+            })
+        }, 10)
     }
 
-    walk(client:Client<any, any>, direction:Matter.Vector){
+    walk(client:Client<any, any>, direction:Vector2){
         if(!isNaN(direction.x) && !isNaN(direction.y)){
             CharactersManager.pointerDownMove(this.worldManager.players.get(client.sessionId)!, direction)
             this.broadcast("wk", {id: client.sessionId, direction: direction})
@@ -84,11 +83,11 @@ export class MyRoom extends Room<RoomState> {
         }
     }
 
-    useQ(client:Client<any, any>, direction:Matter.Vector, weaponDirection: string){
-        if(this.worldManager.players.get(client.sessionId)?.abilities[0].available && (!isNaN(direction.x) && !isNaN(direction.y))){
+    useQ(client:Client<any, any>, direction: Vector2, weaponDirection: string){
+        if(this.worldManager.players.get(client.sessionId)?.abilities[0].available){
             CharactersManager.useQ(this.worldManager.players.get(client.sessionId)!, 
                 this.worldManager.players.get(client.sessionId)!.abilities[0], weaponDirection, this.clock)
-            this.broadcast("q", {id: client.sessionId, direction:direction})
+            this.broadcast("q", {id: client.sessionId, direction:direction, weaponDirection: weaponDirection})
             console.log("q: " + client.sessionId + " time: " + getTime())
             console.log(true)
         }
@@ -98,9 +97,9 @@ export class MyRoom extends Room<RoomState> {
         }
     }
 
-    useW(client:Client<any,any>, direction:Matter.Vector){
+    useW(client:Client<any,any>, direction:Vector2){
         console.log(direction)
-        if(this.worldManager.players.get(client.sessionId)?.abilities[1].available && (!isNaN(direction.x) && !isNaN(direction.y))){
+        if(this.worldManager.players.get(client.sessionId)?.abilities[1].available){
             CharactersManager.useW(this.worldManager.players.get(client.sessionId)!, direction, this.clock);
             this.broadcast("w", {id: client.sessionId, direction: direction});
             console.log("w: "+ client.sessionId + " time: " + getTime())
@@ -112,14 +111,14 @@ export class MyRoom extends Room<RoomState> {
         }
     }
 
-    enemyMoves(enemy:Enemy, vector:Matter.Vector){
+    enemyMoves(enemy:Enemy, vector:Vector2){
         this.broadcast("em", {id: enemy.id, vector: vector});
     }
 
     onJoin (client: Client, options: any) {
         console.log("connected: " + client.sessionId + " time: " + getTime())
-        let character = new Character(0.6, 280, 280, [], client.sessionId, "scythe-girl", this.engine, this, this.worldManager)
-        character.abilities = scytheGirlAbilities(character, this.engine, this.worldManager)
+        let character = new Character(0.05, 280, 280, [], client.sessionId, "scythe-girl",this, this.worldManager)
+        character.abilities = scytheGirlAbilities(character, this.worldManager)
 
         let characters = new Array<ICharacter>()
         this.worldManager.players.forEach((c:Character)=>characters.push(c.getData()))
@@ -131,10 +130,7 @@ export class MyRoom extends Room<RoomState> {
     }
 
     onLeave (client: Client, consented: boolean) {
-        let ability:QAbility = this.worldManager.players.get(client.sessionId).abilities[0] as QAbility;
         console.log("disconnected: " + client.sessionId + " time: " + getTime())
-        Matter.Composite.remove(this.engine.world, [ability.right, ability.down, ability.left, ability.up])
-        Matter.Composite.remove(this.engine.world, (this.worldManager.players.get(client.sessionId).abilities[1] as WAbility).hitbox)
         this.worldManager.players.delete(client.sessionId)
         this.state.characters.delete(client.sessionId)
     }

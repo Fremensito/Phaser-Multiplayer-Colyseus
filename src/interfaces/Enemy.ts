@@ -6,8 +6,6 @@ export interface IEnemy{
     pointToMoveY: number;
     directionX: number;
     directionY: number;
-    velocityX: number;
-    velocityY: number;
     health: number
     id: string;
 }

@@ -1,5 +1,8 @@
 import { Ability } from "../combat/Ability";
+import { QAbility } from "../combat/scythe-girl/QAbility";
+import { WAbility } from "../combat/scythe-girl/WAbility";
 import { Character } from "../game-objects/Character";
+import { Vector2 } from "../interfaces/Vector2";
 
 export class CharactersManager{
     /**
@@ -7,7 +10,7 @@ export class CharactersManager{
      * @param {Character} character 
      * @param {{x:number, y:number}} vector 
      */
-    static pointerDownMove(character:Character, vector:Matter.Vector){
+    static pointerDownMove(character:Character, vector:Vector2){
         character.idle = false;
         character.changeDirectionInput(vector)
     }
@@ -22,6 +25,7 @@ export class CharactersManager{
         character.attacking = true
         character.idle = false
         ability.activate();
+        (ability as QAbility).doDamage(direction, character)
         character.hitWithQ(direction);
         clock.setTimeout(()=>{
             ability.available = true;
@@ -38,7 +42,7 @@ export class CharactersManager{
      * @param {Character} character 
      * @param {{x:number, y:number}} direction 
      */
-    static useW(character:Character, direction:Matter.Vector, clock:any){
+    static useW(character:Character, direction:Vector2, clock:any){
         character.attacking = true;
         character.idle = false;
         character.abilities[1].activate()
@@ -48,7 +52,8 @@ export class CharactersManager{
         //character.speed = 120;
 
         clock.setTimeout(()=>{
-            character.abilities[1].available = true
+            character.abilities[1].available = true;
+            (character.abilities[1] as WAbility).clear();
         }, character.abilities[1].cooldown - 100)
 
         clock.setTimeout(()=>{

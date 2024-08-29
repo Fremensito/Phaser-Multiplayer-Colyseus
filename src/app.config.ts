@@ -12,13 +12,12 @@ let server
 
 export default config({
 
-
     initializeGameServer: (gameServer) => {
         /**
          * Define your room handlers:
          */
         gameServer.define('my_room', MyRoom);
-        gameServer.simulateLatency(300);
+        gameServer.simulateLatency(60);
         matchMaker.create("my_room");
     },
 

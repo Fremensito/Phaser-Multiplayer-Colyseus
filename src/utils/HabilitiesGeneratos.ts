@@ -3,7 +3,7 @@ import { WAbility } from "../combat/scythe-girl/WAbility";
 import { Character } from "../game-objects/Character";
 import { WorldManager } from "../managers/WorldManager";
 
-export function scytheGirlAbilities(character:Character, engine:Matter.Engine, worldManager: WorldManager){
+export function scytheGirlAbilities(character:Character, worldManager: WorldManager){
     return[
         new QAbility("basic attack", 1000, 8, 5, 0, "", (
             {
@@ -12,7 +12,7 @@ export function scytheGirlAbilities(character:Character, engine:Matter.Engine, w
                 slotResource:"ui/hability.png", 
                 iconResource:"ui/scythe_hability.png"
             }),
-            20, character, engine, worldManager),
+            26, character, worldManager),
         new WAbility("W", 3000, 12, 5, 0, "W-particles.png", 
             {
                 abilityWidth:32, 
@@ -20,6 +20,6 @@ export function scytheGirlAbilities(character:Character, engine:Matter.Engine, w
                 slotResource:"ui/W-slot.png", 
                 iconResource:"ui/W-icon.png"
             }, 
-            26, character, engine, worldManager)
+            30, character, worldManager)
     ]
 }
