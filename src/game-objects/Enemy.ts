@@ -13,7 +13,8 @@ export class Enemy extends AliveEntity{
     worldManager: WorldManager
     room:MyRoom
     entityType: "enemy"
-    lastPosition = {x:0, y:0}
+    testX: number;
+    testY: number;
 
     constructor(speed: number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
         worldManager: WorldManager
@@ -27,6 +28,8 @@ export class Enemy extends AliveEntity{
         this.schema.id = id;
         this.schema.x = x;
         this.schema.y = y;
+        this.testX = x;
+        this.testY = y;
 
         this.setPartition()
 
@@ -38,13 +41,6 @@ export class Enemy extends AliveEntity{
         this.boxWidth = 5;
         this.boxHeight = 10;
         this.box = new SAT.Box(new SAT.Vector(x - this.boxWidth/2, y - this.boxHeight/2), this.boxWidth, this.boxHeight)
-    }
-
-    setPartition(){
-        this.worldManager.mapParitions.get(
-                Math.floor(Math.floor(this.position.x/this.worldManager.width)).toString()+
-                Math.floor(Math.floor(this.position.y/this.worldManager.width)).toString())
-                ?.push(this)
     }
 
     getData():IEnemy{
@@ -72,24 +68,10 @@ export class Enemy extends AliveEntity{
         if(this.checkPositionGoal()){
             this.idle = true
         }
+        this.updatePartition()
         this.box.pos.x = (this.position.x - this.boxWidth/2)
         this.box.pos.y = (this.position.y - this.boxHeight/2)
         //console.log("ghost", this.body.position)
-    }
-
-    saveLastPosition(){
-        this.lastPosition.x = this.position.x;
-        this.lastPosition.y = this.position.y;
-    }
-
-    updatePartition(){
-        let enemies = this.worldManager.mapParitions.get(
-                Math.floor(this.lastPosition.x/this.worldManager.width).toString()+
-                Math.floor(this.lastPosition.y/this.worldManager.width).toString())
-
-        enemies.splice(enemies.indexOf(this), 1)
-        
-        this.setPartition()
     }
 
     /**
@@ -119,9 +101,7 @@ export class Enemy extends AliveEntity{
                 enemy.room.state.enemies.delete(this.id)
                 enemy.worldManager.enemies.delete(this.id)
                 
-                let enemies = this.worldManager.mapParitions.get(
-                    Math.floor(this.lastPosition.x/this.worldManager.width).toString()+
-                    Math.floor(this.lastPosition.y/this.worldManager.width).toString())
+                let enemies = this.worldManager.mapParitions.get(this.partition)
     
                 enemies.splice(enemies.indexOf(this), 1)
             }, 100, this)
@@ -131,8 +111,8 @@ export class Enemy extends AliveEntity{
     randomMovement(enemy: Enemy){
         if(getRandomInt(1, 10) > 2){
             enemy.idle = false;
-            let x = getRandomInt(280, 400);
-            let y = getRandomInt(280, 400);
+            let x = getRandomInt(enemy.testX-80, enemy.testX+80);
+            let y = getRandomInt(enemy.testY-80, enemy.testY+80);
             enemy.changeDirectionInput({x: x, y:y})
         }
         if(!this.dead)

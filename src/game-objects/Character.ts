@@ -24,6 +24,9 @@ export class Character extends AliveEntity{
         this.characterClass = characterClass;
         this.schema.x = x;
         this.schema.y = y;
+
+        this.setPartition()
+
         this.schema.id = this.id;
         this.schema.health = 100;
         this.schema.type = this.entityType;
@@ -54,6 +57,7 @@ export class Character extends AliveEntity{
      * @param {number} delta 
      */
     update(delta: number){
+        this.saveLastPosition()
         super.update(delta);
         this.updateDirection();
         if(!this.idle && !this.attacking){
@@ -76,6 +80,8 @@ export class Character extends AliveEntity{
         if(this.checkPositionGoal()){
             this.idle = true
         }
+
+        this.updatePartition();
 
         this.box.pos.x = (this.position.x - this.boxWidth/2)
         this.box.pos.y = (this.position.y - this.boxHeight/2)

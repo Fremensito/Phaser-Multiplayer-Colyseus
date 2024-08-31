@@ -10,16 +10,17 @@ import { ICharacter } from "../interfaces/Character";
 import { IEnemy } from "../interfaces/Enemy";
 import { Vector2 } from "../interfaces/Vector2";
 import SAT from "sat";
+import { getRandomInt } from "../math/Math";
 
 export class MyRoom extends Room<RoomState> {
 
-    maxClients: 10;
     worldManager: WorldManager;
 
     onCreate (options: any) {
 
         this.setState(new RoomState());
         this.autoDispose = false;
+        this.maxClients = 10;
         this.clock.start();
 
         this.onMessage("wk", (client, message:Vector2) => {
@@ -41,14 +42,18 @@ export class MyRoom extends Room<RoomState> {
 
         this.worldManager = new WorldManager();
 
-        new Enemy(0.035, 320, 320, [], "ghost", this, this.worldManager)
-        new Enemy(0.035, 320, 320,[], "ghost1", this, this.worldManager)
-        new Enemy(0.035, 320, 320, [], "ghost2", this, this.worldManager)
-        new Enemy(0.035, 320, 330, [], "ghost3", this, this.worldManager)
-        new Enemy(0.035, 320, 320, [], "ghost4", this, this.worldManager)
-        new Enemy(0.035, 320, 320,[], "ghost5", this, this.worldManager)
-        new Enemy(0.035, 320, 320, [], "ghost6", this, this.worldManager)
-        new Enemy(0.035, 320, 330, [], "ghost7", this, this.worldManager)
+        // new Enemy(0.035, 320, 320, [], "ghost", this, this.worldManager)
+        // new Enemy(0.035, 320, 320,[], "ghost1", this, this.worldManager)
+        // new Enemy(0.035, 320, 320, [], "ghost2", this, this.worldManager)
+        // new Enemy(0.035, 320, 330, [], "ghost3", this, this.worldManager)
+        // new Enemy(0.035, 320, 320, [], "ghost4", this, this.worldManager)
+        // new Enemy(0.035, 320, 320,[], "ghost5", this, this.worldManager)
+        // new Enemy(0.035, 320, 320, [], "ghost6", this, this.worldManager)
+        // new Enemy(0.035, 320, 330, [], "ghost7", this, this.worldManager)
+
+        for(let i = 0; i < 50; i++){
+            new Enemy(0.035, getRandomInt(100, 700), getRandomInt(100, 700), [], "ghost"+i.toString(), this, this.worldManager)
+        }
 
         this.setSimulationInterval((delta)=>{
             this.worldManager.players.forEach((c:Character,k)=>{
@@ -61,24 +66,10 @@ export class MyRoom extends Room<RoomState> {
             })
 
             this.worldManager.checkCollisions(delta)
-            this.checkCollisions(delta)
 
         }, 10)
 
         this.setPatchRate(16);  
-    }
-
-    checkCollisions(delta: number){
-        this.worldManager.players.forEach(c=>{
-            this.worldManager.enemies.forEach(e=>{
-                if(SAT.testPolygonPolygon(e.box.toPolygon(), c.box.toPolygon())){
-                    let new_direction = (new SAT.Vector(c.position.x-e.position.x, c.position.y - e.position.y)).normalize();
-                    c.position.x += new_direction.x * c.speed * delta
-                    c.position.y += new_direction.y * c.speed * delta
-                    console.log("collisioning")
-                }
-            })
-        })
     }
 
     walk(client:Client<any, any>, direction:Vector2){

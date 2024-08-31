@@ -1,5 +1,6 @@
 import { Ability } from "../combat/Ability";
 import { Vector2 } from "../interfaces/Vector2";
+import { WorldManager } from "../managers/WorldManager";
 import { SAliveEntity } from "../schemas/SAliveEntity";
 import SAT from "sat";
 
@@ -19,6 +20,9 @@ export class AliveEntity{
     boxHeight: number;
     boxWidth: number;
     box: SAT.Box;
+    lastPosition = {x:0, y:0}
+    worldManager: WorldManager
+    partition:string;
 
     constructor(speed: number, x: number, y:number, abilities: Array<Ability>, id: string){
         this.position = new SAT.Vector(x, y);
@@ -31,6 +35,31 @@ export class AliveEntity{
         this.pointToMove = new SAT.Vector(x, y+10);
         this.idle = true
         this.attacking = false
+    }
+
+    saveLastPosition(){
+        this.lastPosition.x = this.position.x;
+        this.lastPosition.y = this.position.y;
+    }
+
+    setPartition(){
+        this.worldManager.mapParitions.get(
+                Math.floor(Math.floor(this.position.x/this.worldManager.width)).toString()+ "-" +
+                Math.floor(Math.floor(this.position.y/this.worldManager.width)).toString())
+                ?.push(this)
+        
+        this.partition = Math.floor(Math.floor(this.position.x/this.worldManager.width)).toString()+ "-" +
+        Math.floor(Math.floor(this.position.y/this.worldManager.width)).toString()
+    }
+
+    updatePartition(){
+        let enemies = this.worldManager.mapParitions.get(
+                Math.floor(this.lastPosition.x/this.worldManager.width).toString()+ "-" +
+                Math.floor(this.lastPosition.y/this.worldManager.width).toString())
+
+        enemies.splice(enemies.indexOf(this), 1)
+        
+        this.setPartition()
     }
 
     updateDirection(){
