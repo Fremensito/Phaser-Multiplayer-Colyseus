@@ -5,7 +5,7 @@ import { WorldManager } from "../managers/WorldManager";
 
 export function scytheGirlAbilities(character:Character, worldManager: WorldManager){
     return[
-        new QAbility("basic attack", 1000, 8, 5, 0, "", (
+        new QAbility("basic attack", 1000, 12, 5, 0, "", (
             {
                 abilityWidth:32,
                 abilityHeight:32,

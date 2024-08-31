@@ -21,7 +21,6 @@ export class WAbility extends Ability{
     }
 
     doDamage(character:Character){
-        console.log(this.enemiesHit.length)
         this.worldManager.enemies.forEach(e=>{
             if(!this.enemiesHit.includes(e) 
                 && (new SAT.Vector(character.position.x - e.position.x, character.position.y -e.position.y)).len() <= this.range){
