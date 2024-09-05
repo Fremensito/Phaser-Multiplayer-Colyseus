@@ -71,23 +71,6 @@ export class QAbility extends Ability{
         }
     }
 
-    selectEnemies(partition: string): Array<string>{
-        let keys = []
-        let coords = partition.split("-")
-        let xMax = +coords[0] + 2;
-        let yMax = +coords[1] + 2;
-        for(let i = +coords[1]-1; i < yMax; i++){
-            for(let j = +coords[0]-1; j < xMax; j++){
-                keys.push(j.toString() + "-" + i.toString())
-                // this.worldManager.mapParitions.get(j.toString() + "-" + i.toString())?.forEach(e=>{
-                //     if(e instanceof Enemy && SAT.testPolygonPolygon(direction.toPolygon(), e.box.toPolygon()))
-                //         e.getDamage(10)
-                // })
-            }
-        }
-        return keys;
-    }
-
     update(x:number, y: number){
         
         this.up.pos = new SAT.Vector(x - this.attackWidth/2, y-this.range)
