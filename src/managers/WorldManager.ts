@@ -1,5 +1,5 @@
 import { AliveEntity } from "../game-objects/AliveEntity";
-import { Character } from "../game-objects/Character";
+import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
 import { Enemy } from "../game-objects/Enemy";
 import SAT from "sat";
 
@@ -8,7 +8,7 @@ export class WorldManager{
     width = 200;
 
     enemies = new Map<string, Enemy>();
-    players = new Map<string, Character>();
+    scytheGirls = new Map<string, ScytheGirl>();
     mapParitions = new Map<string, Array<AliveEntity>>();
 
     constructor(){
@@ -40,9 +40,9 @@ export class WorldManager{
             })
         })
 
-        this.players.forEach(c=>{
-            this.mapParitions.get(c.partition).forEach(a=>{
-                if(!(a instanceof Character) && SAT.testPolygonPolygon(a.box.toPolygon(), c.box.toPolygon())){
+        this.scytheGirls.forEach(c=>{
+            this.mapParitions.get(c.partition)?.forEach(a=>{
+                if(!(a instanceof ScytheGirl) && SAT.testPolygonPolygon(a.box.toPolygon(), c.box.toPolygon())){
                     c.saveLastPosition()
                     let new_direction = (new SAT.Vector(c.position.x-a.position.x, c.position.y - a.position.y)).normalize();
                     c.position.x += new_direction.x * c.speed * delta

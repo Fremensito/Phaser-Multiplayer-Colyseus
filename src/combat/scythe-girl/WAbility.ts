@@ -1,33 +1,39 @@
-import { Character } from "../../game-objects/Character";
 import { Enemy } from "../../game-objects/Enemy";
 import { UIAbility } from "../../interfaces/Ability";
 import { Ability } from "../Ability";
-import { Globals } from "../../globals/Globals";
 import { WorldManager } from "../../managers/WorldManager";
 import SAT from "sat";
+import { ScytheGirl } from "../../game-objects/scythe-girl/ScytheGirl";
 
 export class WAbility extends Ability{
     enemiesHit = new Array<Enemy>();
-    character: Character
     worldManager: WorldManager
 
     constructor(
         name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
-        particlesSprite:string, UI:UIAbility, range:number, character:Character, worldManager: WorldManager
+        particlesSprite:string, UI:UIAbility, range:number, worldManager: WorldManager
     ){
         super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range);
-        this.character = character;
         this.worldManager = worldManager
     }
 
-    doDamage(character:Character){
-        this.worldManager.enemies.forEach(e=>{
-            if(!this.enemiesHit.includes(e) 
-                && (new SAT.Vector(character.position.x - e.position.x, character.position.y -e.position.y)).len() <= this.range){
-                e.getDamage(10);
-                this.enemiesHit.push(e);
-            }
+    doDamage(character:ScytheGirl, partition: string){
+        this.selectEnemies(partition).forEach(k=>{
+            this.worldManager.mapParitions.get(k)?.forEach(e => {
+                if(e instanceof Enemy && !this.enemiesHit.includes(e)
+                    && (new SAT.Vector(character.position.x - e.position.x, character.position.y -e.position.y)).len() <= this.range){
+                        e.getDamage(10)
+                        this.enemiesHit.push(e)
+                    }
+            })
         })
+        // this.worldManager.enemies.forEach(e=>{
+        //     if(!this.enemiesHit.includes(e) 
+        //         && (new SAT.Vector(character.position.x - e.position.x, character.position.y -e.position.y)).len() <= this.range){
+        //         e.getDamage(10);
+        //         this.enemiesHit.push(e);
+        //     }
+        // })
     }
 
     clear(){

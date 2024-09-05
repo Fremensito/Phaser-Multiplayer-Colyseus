@@ -1,15 +1,14 @@
-import { Ability } from "../combat/Ability";
-import { AliveEntity } from "./AliveEntity";
-import { WorldManager } from "../managers/WorldManager";
-import { Globals } from "../globals/Globals";
-import { ICharacter } from "../interfaces/Character";
-import { IAbility } from "../interfaces/Ability";
-import { MyRoom } from "../rooms/MyRoom";
-import { WAbility } from "../combat/scythe-girl/WAbility";
-import { Vector2 } from "../interfaces/Vector2";
+import { Ability } from "../../combat/Ability";
+import { AliveEntity } from "../AliveEntity";
+import { WorldManager } from "../../managers/WorldManager";
+import { ICharacter } from "../../interfaces/Character";
+import { IAbility } from "../../interfaces/Ability";
+import { MyRoom } from "../../rooms/MyRoom";
+import { WAbility } from "../../combat/scythe-girl/WAbility";
+import { Vector2 } from "../../interfaces/Vector2";
 import SAT from "sat";
 
-export class Character extends AliveEntity{
+export class ScytheGirl extends AliveEntity{
     characterClass: string
     worldManager: WorldManager
     entityType = "character";
@@ -32,7 +31,7 @@ export class Character extends AliveEntity{
         this.schema.type = this.entityType;
 
         room.state.characters.set(this.id, this.schema)
-        this.worldManager.players.set(this.id, this)
+        this.worldManager.scytheGirls.set(this.id, this)
 
         this.boxHeight = 10;
         this.boxWidth = 10;
@@ -70,7 +69,7 @@ export class Character extends AliveEntity{
                         this.position.x += this.speed*this.direction.x*delta*3
                         this.position.y += this.speed*this.direction.y*delta*3
                     }
-                    (this.abilities[1] as WAbility).doDamage(this);
+                    (this.abilities[1] as WAbility).doDamage(this, this.partition);
                     break;
                 case "Q":
                     // Matter.Body.setVelocity(this.body, {x:0, y:0})
@@ -80,6 +79,8 @@ export class Character extends AliveEntity{
         if(this.checkPositionGoal()){
             this.idle = true
         }
+
+        //console.log(this.position)
 
         this.updatePartition();
 

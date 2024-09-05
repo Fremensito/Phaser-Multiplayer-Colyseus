@@ -3,14 +3,14 @@ import { RoomState } from "./schema/RoomState";
 import { getTime } from "../utils/Functions";
 import { scytheGirlAbilities } from "../utils/HabilitiesGeneratos";
 import { WorldManager } from "../managers/WorldManager";
-import { CharactersManager } from "../managers/CharactersManager";
 import { Enemy } from "../game-objects/Enemy";
-import { Character } from "../game-objects/Character";
 import { ICharacter } from "../interfaces/Character";
 import { IEnemy } from "../interfaces/Enemy";
 import { Vector2 } from "../interfaces/Vector2";
 import SAT from "sat";
 import { getRandomInt } from "../math/Math";
+import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
+import { NetManager } from "../managers/NetManager";
 
 export class MyRoom extends Room<RoomState> {
 
@@ -21,26 +21,25 @@ export class MyRoom extends Room<RoomState> {
         this.setState(new RoomState());
         this.autoDispose = false;
         this.maxClients = 10;
+        this.worldManager = new WorldManager();
         this.clock.start();
 
         this.onMessage("wk", (client, message:Vector2) => {
-            this.walk(client, message)
+            NetManager.walk(this,client, message)
         });
 
         this.onMessage("q", (client, message:{direction:Vector2, weaponDirection:string})=>{
-            this.useQ(client, message.direction, message.weaponDirection)
+            NetManager.useQ(this, client, message.direction, message.weaponDirection)
         })
 
         this.onMessage("w", (client, direction:Vector2)=>{
-            this.useW(client, direction)
+            NetManager.useW(this, client, direction)
         })
 
         this.onMessage("ping", (client)=>{
             client.send("ping")
         })
 
-
-        this.worldManager = new WorldManager();
 
         // new Enemy(0.035, 320, 320, [], "ghost", this, this.worldManager)
         // new Enemy(0.035, 320, 320,[], "ghost1", this, this.worldManager)
@@ -56,9 +55,9 @@ export class MyRoom extends Room<RoomState> {
         }
 
         this.setSimulationInterval((delta)=>{
-            this.worldManager.players.forEach((c:Character,k)=>{
-                c.update(delta);
-                c.abilities.forEach(a => a.update())
+            this.worldManager.scytheGirls.forEach((s:ScytheGirl,k)=>{
+                s.update(delta);
+                s.abilities.forEach(a => a.update(s.position.x, s.position.y))
             })
 
             this.worldManager.enemies.forEach((e:Enemy)=>{
@@ -72,58 +71,13 @@ export class MyRoom extends Room<RoomState> {
         this.setPatchRate(16);  
     }
 
-    walk(client:Client<any, any>, direction:Vector2){
-        if(!isNaN(direction.x) && !isNaN(direction.y)){
-            CharactersManager.pointerDownMove(this.worldManager.players.get(client.sessionId)!, direction)
-            this.broadcast("wk", {id: client.sessionId, direction: direction})
-            console.log("wk: "+ client.sessionId + " time: " + getTime())
-            console.log(true)
-        }
-        else{
-            console.log("wk: "+ client.sessionId + " time: " + getTime())
-            console.log(false)
-        }
-    }
-
-    useQ(client:Client<any, any>, direction: Vector2, weaponDirection: string){
-        if(this.worldManager.players.get(client.sessionId)?.abilities[0].available){
-            CharactersManager.useQ(this.worldManager.players.get(client.sessionId)!, 
-                this.worldManager.players.get(client.sessionId)!.abilities[0], weaponDirection, this.clock)
-            this.broadcast("q", {id: client.sessionId, direction:direction, weaponDirection: weaponDirection})
-            console.log("q: " + client.sessionId + " time: " + getTime())
-            console.log(true)
-        }
-        else{
-            console.log("q: " + client.sessionId + " time: " + getTime())
-            console.log(false)
-        }
-    }
-
-    useW(client:Client<any,any>, direction:Vector2){
-        console.log(direction)
-        if(this.worldManager.players.get(client.sessionId)?.abilities[1].available){
-            CharactersManager.useW(this.worldManager.players.get(client.sessionId)!, direction, this.clock);
-            this.broadcast("w", {id: client.sessionId, direction: direction});
-            console.log("w: "+ client.sessionId + " time: " + getTime())
-            console.log(true)
-        }
-        else{
-            console.log("w: "+ client.sessionId + " time: " + getTime())
-            console.log(false)
-        }
-    }
-
-    enemyMoves(enemy:Enemy, vector:Vector2){
-        this.broadcast("em", {id: enemy.id, vector: vector});
-    }
-
     onJoin (client: Client, options: any) {
         console.log("connected: " + client.sessionId + " time: " + getTime())
-        let character = new Character(0.05, 280, 280, [], client.sessionId, "scythe-girl",this, this.worldManager)
-        character.abilities = scytheGirlAbilities(character, this.worldManager)
+        let character = new ScytheGirl(0.05, 280, 280, [], client.sessionId, "scythe-girl",this, this.worldManager)
+        character.abilities = scytheGirlAbilities(this.worldManager)
 
         let characters = new Array<ICharacter>()
-        this.worldManager.players.forEach((c:Character)=>characters.push(c.getData()))
+        this.worldManager.scytheGirls.forEach((s:ScytheGirl)=>characters.push(s.getData()))
         let enemiesSend = new Array<IEnemy>
         this.worldManager.enemies.forEach((e:Enemy) => enemiesSend.push(e.getData()))
 
@@ -133,7 +87,7 @@ export class MyRoom extends Room<RoomState> {
 
     onLeave (client: Client, consented: boolean) {
         console.log("disconnected: " + client.sessionId + " time: " + getTime())
-        this.worldManager.players.delete(client.sessionId)
+        this.worldManager.scytheGirls.delete(client.sessionId)
         this.state.characters.delete(client.sessionId)
     }
 

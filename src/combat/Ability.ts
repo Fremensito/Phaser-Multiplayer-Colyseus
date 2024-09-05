@@ -56,7 +56,20 @@ export class Ability{
         }
     }
 
-    update(){}
+    update(x:number, y:number){}
+
+    selectEnemies(partition: string): Array<string>{
+        let keys = []
+        let coords = partition.split("-")
+        let xMax = +coords[0] + 2;
+        let yMax = +coords[1] + 2;
+        for(let i = +coords[1]-1; i < yMax; i++){
+            for(let j = +coords[0]-1; j < xMax; j++){
+                keys.push(j.toString() + "-" + i.toString())
+            }
+        }
+        return keys;
+    }
 
     attack(direction: any){}
 }

@@ -6,6 +6,7 @@ import { MyRoom } from "../rooms/MyRoom";
 import { getRandomInt } from "../math/Math";
 import { Vector2 } from "../interfaces/Vector2";
 import SAT from "sat";
+import { NetManager } from "../managers/NetManager";
 
 export class Enemy extends AliveEntity{
 
@@ -81,7 +82,7 @@ export class Enemy extends AliveEntity{
     changeDirectionInput(vector:Vector2){
         // console.log(vector)
         // console.log(this.id)
-        this.room.enemyMoves(this, vector)
+        NetManager.enemyMoves(this.room, this, vector)
         super.changeDirectionInput(vector)
     }
 
@@ -91,6 +92,7 @@ export class Enemy extends AliveEntity{
      */
     getDamage(damage:number){
         console.log(this.id + ": damge " + damage)
+        NetManager.enemyReceiveDamage(this.room, this)
         this.health -= damage;
         this.schema.health -= damage;
         console.log(this.schema.health)

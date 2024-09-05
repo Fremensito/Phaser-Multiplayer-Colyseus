@@ -57,7 +57,7 @@ export class AliveEntity{
                 Math.floor(this.lastPosition.x/this.worldManager.width).toString()+ "-" +
                 Math.floor(this.lastPosition.y/this.worldManager.width).toString())
 
-        enemies.splice(enemies.indexOf(this), 1)
+        enemies?.splice(enemies.indexOf(this), 1)
         
         this.setPartition()
     }
@@ -86,5 +86,6 @@ export class AliveEntity{
     update(delta: number){
         this.schema.x = this.position.x;
         this.schema.y = this.position.y;
+        this.schema.idle = this.idle;
     }
 }
