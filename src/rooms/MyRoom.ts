@@ -11,6 +11,7 @@ import SAT from "sat";
 import { getRandomInt } from "../math/Math";
 import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
 import { NetManager } from "../managers/NetManager";
+import { classes } from "../utils/Classes";
 
 export class MyRoom extends Room<RoomState> {
 
@@ -24,22 +25,7 @@ export class MyRoom extends Room<RoomState> {
         this.worldManager = new WorldManager();
         this.clock.start();
 
-        this.onMessage("wk", (client, message:Vector2) => {
-            NetManager.walk(this,client, message)
-        });
-
-        this.onMessage("q", (client, message:{direction:Vector2, weaponDirection:string})=>{
-            NetManager.useQ(this, client, message.direction, message.weaponDirection)
-        })
-
-        this.onMessage("w", (client, direction:Vector2)=>{
-            NetManager.useW(this, client, direction)
-        })
-
-        this.onMessage("ping", (client)=>{
-            client.send("ping")
-        })
-
+        NetManager.set(this)
 
         // new Enemy(0.035, 320, 320, [], "ghost", this, this.worldManager)
         // new Enemy(0.035, 320, 320,[], "ghost1", this, this.worldManager)
@@ -73,7 +59,7 @@ export class MyRoom extends Room<RoomState> {
 
     onJoin (client: Client, options: any) {
         console.log("connected: " + client.sessionId + " time: " + getTime())
-        let character = new ScytheGirl(0.05, 280, 280, [], client.sessionId, "scythe-girl",this, this.worldManager)
+        let character = new ScytheGirl(0.05, 280, 280, [], client.sessionId, classes.scytheGirl,this, this.worldManager)
         character.abilities = scytheGirlAbilities(this.worldManager)
 
         let characters = new Array<ICharacter>()

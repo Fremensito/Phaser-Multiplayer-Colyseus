@@ -1,13 +1,28 @@
 import { Client } from "colyseus"
-import { CharacterManagersProvider } from "../providers/CharacterManagersProvider"
 import { Vector2 } from "../interfaces/Vector2"
 import { MyRoom } from "../rooms/MyRoom"
 import { CharactersManager } from "./CharactersManager"
 import { getTime } from "../utils/Functions"
-import { ScytheGirlManager } from "../game-objects/scythe-girl/ScytheGirlManager"
 import { Enemy } from "../game-objects/Enemy"
+import { ScytheGirlNetManager } from "../game-objects/scythe-girl/ScytheGirlNetManager"
 
 export class NetManager{
+
+    static set(room: MyRoom){
+        room.onMessage("wk", (client, message:Vector2) => {
+            NetManager.walk(room,client, message)
+        });
+
+        room.onMessage("ping", (client)=>{
+            client.send("ping")
+        })
+        
+        this.setManagers(room)
+    }
+
+    static setManagers(room: MyRoom){
+        ScytheGirlNetManager.set(room)
+    }
     
     static walk(room:MyRoom, client:Client<any, any>, direction:Vector2){
         if(!isNaN(direction.x) && !isNaN(direction.y)){
@@ -22,34 +37,6 @@ export class NetManager{
         }
     }
 
-    static useQ(room:MyRoom, client:Client<any, any>, direction: Vector2, weaponDirection: string){
-        if(room.worldManager.scytheGirls.get(client.sessionId)?.abilities[0].available){
-            ScytheGirlManager.useQ(room.worldManager.scytheGirls.get(client.sessionId)!, 
-                room.worldManager.scytheGirls.get(client.sessionId)!.abilities[0], weaponDirection, room.clock)
-            room.broadcast("q", {id: client.sessionId, direction:direction, weaponDirection: weaponDirection})
-            console.log("q: " + client.sessionId + " time: " + getTime())
-            console.log(true)
-        }
-        else{
-            console.log("q: " + client.sessionId + " time: " + getTime())
-            console.log(false)
-        }
-    }
-
-    static useW(room:MyRoom, client:Client<any,any>, direction:Vector2){
-        console.log(direction)
-        if(room.worldManager.scytheGirls.get(client.sessionId)?.abilities[1].available){
-            ScytheGirlManager.useW(room.worldManager.scytheGirls.get(client.sessionId)!, direction, room.clock);
-            room.broadcast("w", {id: client.sessionId, direction: direction});
-            console.log("w: "+ client.sessionId + " time: " + getTime())
-            console.log(true)
-        }
-        else{
-            console.log("w: "+ client.sessionId + " time: " + getTime())
-            console.log(false)
-        }
-    }
-
     static enemyMoves(room:MyRoom, enemy:Enemy, vector:Vector2){
         room.broadcast("em", {id: enemy.id, vector: vector});
     }
@@ -57,4 +44,5 @@ export class NetManager{
     static enemyReceiveDamage(room:MyRoom, enemy:Enemy){
         room.broadcast("ed", enemy.id)
     }
+    
 }
