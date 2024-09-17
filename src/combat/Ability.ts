@@ -1,13 +1,14 @@
+import { AliveEntity } from "../game-objects/AliveEntity";
 import { IAbility, UIAbility } from "../interfaces/Ability";
 
 export class Ability{
-    name:string;
+    name:string
     cooldown:number
     speed:number
     frames:number
     manaCost:number
     particlesSprite:string
-    UI:UIAbility;
+    UI:UIAbility
     available:boolean
     range:number
 
@@ -21,6 +22,7 @@ export class Ability{
      * @param {string} particlesSprite 
      * @param {UI} UI 
      */
+
     constructor(name:string, cooldown:number, speed:number, frames:number, manaCost:number, particlesSprite:string, 
         UI:UIAbility, range:number){
         this.name = name;
@@ -56,7 +58,7 @@ export class Ability{
         }
     }
 
-    update(x:number, y:number){}
+    update(character:AliveEntity, x:number, y:number){}
 
     selectEnemies(partition: string): Array<string>{
         let keys = []

@@ -41,8 +41,8 @@ export class NetManager{
         room.broadcast("em", {id: enemy.id, vector: vector});
     }
 
-    static enemyReceiveDamage(room:MyRoom, enemy:Enemy){
-        room.broadcast("ed", enemy.id)
+    static enemyReceiveDamage(room:MyRoom, enemy:Enemy, damage:number){
+        room.broadcast("ed", {id:enemy.id, damage: damage})
     }
     
 }

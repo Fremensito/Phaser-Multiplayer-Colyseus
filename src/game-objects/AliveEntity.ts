@@ -3,9 +3,11 @@ import { Vector2 } from "../interfaces/Vector2";
 import { WorldManager } from "../managers/WorldManager";
 import { SAliveEntity } from "../schemas/SAliveEntity";
 import SAT from "sat";
+import { SVector2 } from "../schemas/SVector2";
+import { MyRoom } from "../rooms/MyRoom";
 
 export class AliveEntity{
-    schema = new SAliveEntity();
+    schema: SAliveEntity;
     speed:  number
     direction: SAT.Vector
     abilities: Array<Ability>
@@ -23,18 +25,26 @@ export class AliveEntity{
     lastPosition = {x:0, y:0}
     worldManager: WorldManager
     partition:string;
+    damage: number;
 
-    constructor(speed: number, x: number, y:number, abilities: Array<Ability>, id: string){
+    constructor(speed: number, damage: number, x: number, y:number, abilities: Array<Ability>, id: string){
         this.position = new SAT.Vector(x, y);
         this.dead = false;
         this.idle = true;
         this.speed = speed;
+        this.damage = damage;
         this.direction = new SAT.Vector(x, y+10)
         this.ability = "";
         this.id = id;
         this.pointToMove = new SAT.Vector(x, y+10);
         this.idle = true
         this.attacking = false
+    }
+
+    generateDebugger(){
+        this.box.toPolygon().calcPoints.forEach(()=> {
+            this.schema.box.push(new SVector2());
+        })
     }
 
     saveLastPosition(){
@@ -87,5 +97,15 @@ export class AliveEntity{
         this.schema.x = this.position.x;
         this.schema.y = this.position.y;
         this.schema.idle = this.idle;
+        if(MyRoom.debug){
+            this.updateDebugger();
+        }
+    }
+
+    updateDebugger(){
+        for(let i = 0; i < this.box.toPolygon().calcPoints.length; i++){
+            this.schema.box[i].x = this.box.pos.x + this.box.toPolygon().calcPoints[i].x;
+            this.schema.box[i].y = this.box.pos.y + this.box.toPolygon().calcPoints[i].y;
+        }
     }
 }

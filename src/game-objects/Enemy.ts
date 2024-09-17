@@ -7,6 +7,7 @@ import { getRandomInt } from "../math/Math";
 import { Vector2 } from "../interfaces/Vector2";
 import SAT from "sat";
 import { NetManager } from "../managers/NetManager";
+import { SAliveEntity } from "../schemas/SAliveEntity";
 
 export class Enemy extends AliveEntity{
 
@@ -16,16 +17,18 @@ export class Enemy extends AliveEntity{
     entityType: "enemy"
     testX: number;
     testY: number;
+    agro: AliveEntity;
 
-    constructor(speed: number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
+    constructor(speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
         worldManager: WorldManager
     ){
-        super(speed,x,y,abilities,id)
+        super(speed, damage, x,y,abilities,id)
         this.worldManager = worldManager;
         this.room = room;
         this.health = 50;
 
         this.worldManager.enemies.set(this.id, this)
+        this.schema = new SAliveEntity();
         this.schema.id = id;
         this.schema.x = x;
         this.schema.y = y;
@@ -36,12 +39,18 @@ export class Enemy extends AliveEntity{
 
         this.schema.health = this.health
         this.schema.type = this.entityType;
+
+        //Inserting the schema in the enemies collection state
         this.room.state.enemies.set(this.id, this.schema)
+        
         setTimeout(this.randomMovement, 5000, this)
 
         this.boxWidth = 5;
         this.boxHeight = 10;
         this.box = new SAT.Box(new SAT.Vector(x - this.boxWidth/2, y - this.boxHeight/2), this.boxWidth, this.boxHeight)
+
+        if(MyRoom.debug)
+            this.generateDebugger();
     }
 
     getData():IEnemy{
@@ -91,8 +100,8 @@ export class Enemy extends AliveEntity{
      * @param {number} damage 
      */
     getDamage(damage:number){
-        console.log(this.id + ": damge " + damage)
-        NetManager.enemyReceiveDamage(this.room, this)
+        console.log(this.id + ": damage " + damage)
+        NetManager.enemyReceiveDamage(this.room, this, damage)
         this.health -= damage;
         this.schema.health -= damage;
         console.log(this.schema.health)

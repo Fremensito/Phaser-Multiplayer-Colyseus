@@ -6,15 +6,13 @@ import { WorldManager } from "../managers/WorldManager";
 import { Enemy } from "../game-objects/Enemy";
 import { ICharacter } from "../interfaces/Character";
 import { IEnemy } from "../interfaces/Enemy";
-import { Vector2 } from "../interfaces/Vector2";
-import SAT from "sat";
 import { getRandomInt } from "../math/Math";
 import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
 import { NetManager } from "../managers/NetManager";
 import { classes } from "../utils/Classes";
 
 export class MyRoom extends Room<RoomState> {
-
+    static debug = true;
     worldManager: WorldManager;
 
     onCreate (options: any) {
@@ -37,13 +35,14 @@ export class MyRoom extends Room<RoomState> {
         // new Enemy(0.035, 320, 330, [], "ghost7", this, this.worldManager)
 
         for(let i = 0; i < 50; i++){
-            new Enemy(0.035, getRandomInt(100, 700), getRandomInt(100, 700), [], "ghost"+i.toString(), this, this.worldManager)
+            new Enemy(0.035, 10, getRandomInt(100, 700), getRandomInt(100, 700), [], "ghost"+i.toString(), this, this.worldManager)
         }
 
+        //Game main loop
         this.setSimulationInterval((delta)=>{
             this.worldManager.scytheGirls.forEach((s:ScytheGirl,k)=>{
                 s.update(delta);
-                s.abilities.forEach(a => a.update(s.position.x, s.position.y))
+                s.abilities.forEach(a => a.update(s, s.position.x, s.position.y))
             })
 
             this.worldManager.enemies.forEach((e:Enemy)=>{
@@ -59,8 +58,8 @@ export class MyRoom extends Room<RoomState> {
 
     onJoin (client: Client, options: any) {
         console.log("connected: " + client.sessionId + " time: " + getTime())
-        let character = new ScytheGirl(0.05, 280, 280, [], client.sessionId, classes.scytheGirl,this, this.worldManager)
-        character.abilities = scytheGirlAbilities(this.worldManager)
+        let character = new ScytheGirl(0.05, 10, 280, 280, [], client.sessionId, classes.scytheGirl,this, this.worldManager)
+        character.abilities = scytheGirlAbilities(this.worldManager, character)
 
         let characters = new Array<ICharacter>()
         this.worldManager.scytheGirls.forEach((s:ScytheGirl)=>characters.push(s.getData()))
@@ -74,7 +73,7 @@ export class MyRoom extends Room<RoomState> {
     onLeave (client: Client, consented: boolean) {
         console.log("disconnected: " + client.sessionId + " time: " + getTime())
         this.worldManager.scytheGirls.delete(client.sessionId)
-        this.state.characters.delete(client.sessionId)
+        this.state.scytheGirls.delete(client.sessionId)
     }
 
     onDispose() {

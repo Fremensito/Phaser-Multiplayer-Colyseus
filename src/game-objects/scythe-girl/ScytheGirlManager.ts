@@ -17,7 +17,7 @@ export class ScytheGirlManager{
         character.attacking = true
         character.idle = false
         ability.activate();
-        (ability as QAbility).doDamage(direction, character.partition)
+        (ability as QAbility).doDamage(direction, character.partition, character.damage)
         character.hitWithQ(direction);
         clock.setTimeout(()=>{
             ability.available = true;

@@ -17,12 +17,12 @@ export class WAbility extends Ability{
         this.worldManager = worldManager
     }
 
-    doDamage(character:ScytheGirl, partition: string){
+    doDamage(character:ScytheGirl, partition: string, damage:number){
         this.selectEnemies(partition).forEach(k=>{
             this.worldManager.mapParitions.get(k)?.forEach(e => {
                 if(e instanceof Enemy && !this.enemiesHit.includes(e)
                     && (new SAT.Vector(character.position.x - e.position.x, character.position.y -e.position.y)).len() <= this.range){
-                        e.getDamage(10)
+                        e.getDamage(damage*1.25)
                         this.enemiesHit.push(e)
                     }
             })
