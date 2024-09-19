@@ -72,6 +72,7 @@ export class MyRoom extends Room<RoomState> {
 
     onLeave (client: Client, consented: boolean) {
         console.log("disconnected: " + client.sessionId + " time: " + getTime())
+        this.worldManager.scytheGirls.get(client.sessionId).disconnected = true;
         this.worldManager.scytheGirls.delete(client.sessionId)
         this.state.scytheGirls.delete(client.sessionId)
     }

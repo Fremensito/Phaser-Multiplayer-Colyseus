@@ -8,7 +8,6 @@ import { WAbility } from "../../combat/scythe-girl/WAbility";
 import { Vector2 } from "../../interfaces/Vector2";
 import SAT from "sat";
 import { SScytheGirl } from "../../schemas/SScytheGirl";
-import { SVector2 } from "../../schemas/SVector2";
 
 export class ScytheGirl extends AliveEntity{
     characterClass: string

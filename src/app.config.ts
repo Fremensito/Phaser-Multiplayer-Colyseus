@@ -26,7 +26,7 @@ export default config({
          * Define your room handlers:
          */
         gameServer.define('my_room', MyRoom);
-        gameServer.simulateLatency(100);
+        gameServer.simulateLatency(60);
         matchMaker.create("my_room");
     },
 

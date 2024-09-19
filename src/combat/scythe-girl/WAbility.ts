@@ -22,7 +22,7 @@ export class WAbility extends Ability{
             this.worldManager.mapParitions.get(k)?.forEach(e => {
                 if(e instanceof Enemy && !this.enemiesHit.includes(e)
                     && (new SAT.Vector(character.position.x - e.position.x, character.position.y -e.position.y)).len() <= this.range){
-                        e.getDamage(damage*1.25)
+                        e.getDamage(damage*1.25, character)
                         this.enemiesHit.push(e)
                     }
             })

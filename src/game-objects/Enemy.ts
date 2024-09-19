@@ -17,12 +17,15 @@ export class Enemy extends AliveEntity{
     entityType: "enemy"
     testX: number;
     testY: number;
-    agro: AliveEntity;
+
+    agro = false;
+    agroTargets = new Array<AliveEntity>;
+    agroRange = 200;
 
     constructor(speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
         worldManager: WorldManager
     ){
-        super(speed, damage, x,y,abilities,id)
+        super(speed, damage, x, y, abilities,id)
         this.worldManager = worldManager;
         this.room = room;
         this.health = 50;
@@ -81,13 +84,33 @@ export class Enemy extends AliveEntity{
         this.updatePartition()
         this.box.pos.x = (this.position.x - this.boxWidth/2)
         this.box.pos.y = (this.position.y - this.boxHeight/2)
-        //console.log("ghost", this.body.position)
+        
+        this.updateAgro();
     }
 
-    /**
-     * 
-     * @param {{x:number, y:number}} vector 
-     */
+    updateAgro(){
+        if(this.agroTargets.length == 0  && this.agro){
+            this.agro = false;
+            setTimeout(this.randomMovement, 5000, this)
+        }
+        else if(this.agro){
+            let agroTargets = this.agroTargets.filter(c => {
+                return new SAT.Vector(this.position.x - c.position.x, this.position.y - c.position.y).len() <= this.agroRange
+                    && !c.disconnected;
+            })
+            this.agroTargets = agroTargets
+            
+            if(this.agroTargets.length != 0){
+                this.agroTargets.sort((c1,c2)=>{
+                    let distanceV_1 = new SAT.Vector(this.position.x - c1.position.x, this.position.y - c1.position.y).len()
+                    let distanceV_2 = new SAT.Vector(this.position.x - c2.position.x, this.position.y - c2.position.y).len()
+                    return distanceV_1 - distanceV_2;
+                })
+                this.idle = false;
+                this.changeDirectionInput({x:this.agroTargets[0].position.x, y:this.agroTargets[0].position.y})
+            }
+        }
+    }
     changeDirectionInput(vector:Vector2){
         // console.log(vector)
         // console.log(this.id)
@@ -95,16 +118,16 @@ export class Enemy extends AliveEntity{
         super.changeDirectionInput(vector)
     }
 
-    /**
-     * 
-     * @param {number} damage 
-     */
-    getDamage(damage:number){
+    getDamage(damage:number, character:AliveEntity){
         console.log(this.id + ": damage " + damage)
         NetManager.enemyReceiveDamage(this.room, this, damage)
         this.health -= damage;
         this.schema.health -= damage;
         console.log(this.schema.health)
+
+        this.agro = true;
+        this.agroTargets.push(character);
+
         if(this.health <= 0){
             this.dead = true
             setTimeout((enemy:Enemy)=>{
@@ -120,13 +143,13 @@ export class Enemy extends AliveEntity{
     }
 
     randomMovement(enemy: Enemy){
-        if(getRandomInt(1, 10) > 2){
+        if(getRandomInt(1, 10) > 2 && !this.agro){
             enemy.idle = false;
             let x = getRandomInt(enemy.testX-80, enemy.testX+80);
             let y = getRandomInt(enemy.testY-80, enemy.testY+80);
             enemy.changeDirectionInput({x: x, y:y})
         }
-        if(!this.dead)
+        if(!enemy.dead && !enemy.agro)
             setTimeout(enemy.randomMovement, 5000, enemy)
     }
 }

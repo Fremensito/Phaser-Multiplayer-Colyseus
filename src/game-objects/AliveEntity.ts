@@ -26,6 +26,7 @@ export class AliveEntity{
     worldManager: WorldManager
     partition:string;
     damage: number;
+    disconnected = false;
 
     constructor(speed: number, damage: number, x: number, y:number, abilities: Array<Ability>, id: string){
         this.position = new SAT.Vector(x, y);

@@ -3,7 +3,6 @@ import { QAbility } from "../../combat/scythe-girl/QAbility";
 import { WAbility } from "../../combat/scythe-girl/WAbility";
 import { ScytheGirl } from "./ScytheGirl";
 import { Vector2 } from "../../interfaces/Vector2";
-import { CharactersManager } from "../../managers/CharactersManager";
 
 export class ScytheGirlManager{
 
@@ -17,7 +16,7 @@ export class ScytheGirlManager{
         character.attacking = true
         character.idle = false
         ability.activate();
-        (ability as QAbility).doDamage(direction, character.partition, character.damage)
+        (ability as QAbility).doDamage(direction, character.partition, character.damage, character)
         character.hitWithQ(direction);
         clock.setTimeout(()=>{
             ability.available = true;
