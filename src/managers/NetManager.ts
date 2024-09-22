@@ -3,7 +3,7 @@ import { Vector2 } from "../interfaces/Vector2"
 import { MyRoom } from "../rooms/MyRoom"
 import { CharactersManager } from "./CharactersManager"
 import { getTime } from "../utils/Functions"
-import { Enemy } from "../game-objects/Enemy"
+import { Enemy } from "../game-objects/Ghost"
 import { ScytheGirlNetManager } from "../game-objects/scythe-girl/ScytheGirlNetManager"
 
 export class NetManager{

@@ -1,4 +1,4 @@
-import { Enemy } from "../../game-objects/Enemy";
+import { Enemy } from "../../game-objects/Ghost";
 import { UIAbility } from "../../interfaces/Ability";
 import { Ability } from "../Ability";
 import { WorldManager } from "../../managers/WorldManager";

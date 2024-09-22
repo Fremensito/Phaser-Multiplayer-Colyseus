@@ -1,6 +1,5 @@
 import { Schema, type, MapSchema } from "@colyseus/schema";
 import { SAliveEntity } from "../../schemas/SAliveEntity";
-import { AliveEntity } from "../../game-objects/AliveEntity";
 import { SScytheGirl } from "../../schemas/SScytheGirl";
 
 export class RoomState extends Schema {

@@ -1,15 +1,12 @@
-import { Enemy } from "../../game-objects/Ghost"
-import { UIAbility } from "../../interfaces/Ability"
-import { Ability } from "../Ability"
-import { WorldManager } from "../../managers/WorldManager"
-import SAT from "sat";
-import { ScytheGirl } from "../../game-objects/scythe-girl/ScytheGirl";
-import { SScytheGirl } from "../../schemas/SScytheGirl";
-import { MyRoom } from "../../rooms/MyRoom";
-import { AliveEntity } from "../../game-objects/AliveEntity";
-import { generateDebugger, updateStraightDirectionAbility } from "../../utils/Debugger";
+import { AliveEntity } from "../game-objects/AliveEntity";
+import { UIAbility } from "../interfaces/Ability";
+import { WorldManager } from "../managers/WorldManager";
+import { MyRoom } from "../rooms/MyRoom";
+import { SStraightDirectionsAbility } from "../schemas/combat/SStraightDirectionAbility";
+import { generateDebugger } from "../utils/Debugger";
+import { Ability } from "./Ability";
 
-export class QAbility extends Ability{
+export class StraightDirectionAttack extends Ability{
     directions = {
         up: "QUp",
         right: "QRight",
@@ -25,7 +22,7 @@ export class QAbility extends Ability{
 
     worldManager: WorldManager
 
-    constructor(character: ScytheGirl, name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
+    constructor(name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
         particlesSprite:string, UI:UIAbility, range:number, worldManager: WorldManager){
         super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range)
         this.worldManager = worldManager;
@@ -38,6 +35,10 @@ export class QAbility extends Ability{
         if(MyRoom.debug)
             generateDebugger([this.up, this.down, this.right, this.left], 
                 (character.schema as SScytheGirl).q);
+    }
+
+    generateDebugger(character: AliveEntity){
+
     }
 
 
@@ -90,12 +91,9 @@ export class QAbility extends Ability{
         this.right.pos = new SAT.Vector(x, y - this.attackWidth/2)
 
         this.left.pos = new SAT.Vector(x - this.range, y - this.attackWidth/2)
-
-        if(MyRoom.debug){
-            updateStraightDirectionAbility([this.up, this.down, this.right, this.left], 
-                (character.schema as SScytheGirl).q
-            )
-        }
     }
 
+    updateDebugger([up, down, right, left]: Array<SAT.Box>, schema: SStraightDirectionsAbility){
+        
+    }
 }

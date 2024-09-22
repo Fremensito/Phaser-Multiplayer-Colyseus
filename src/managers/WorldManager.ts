@@ -1,6 +1,6 @@
 import { AliveEntity } from "../game-objects/AliveEntity";
 import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
-import { Enemy } from "../game-objects/Enemy";
+import { Enemy } from "../game-objects/Ghost";
 import SAT from "sat";
 
 export class WorldManager{

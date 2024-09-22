@@ -3,7 +3,7 @@ import { RoomState } from "./schema/RoomState";
 import { getTime } from "../utils/Functions";
 import { scytheGirlAbilities } from "../utils/HabilitiesGeneratos";
 import { WorldManager } from "../managers/WorldManager";
-import { Enemy } from "../game-objects/Enemy";
+import { Enemy } from "../game-objects/Ghost";
 import { ICharacter } from "../interfaces/Character";
 import { IEnemy } from "../interfaces/Enemy";
 import { getRandomInt } from "../math/Math";
