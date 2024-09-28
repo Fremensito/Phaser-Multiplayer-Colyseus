@@ -1,8 +1,8 @@
 import { Client } from "colyseus"
-import { MyRoom } from "../../rooms/MyRoom"
+import { MyRoom } from "../../../rooms/MyRoom"
 import { ScytheGirlManager } from "./ScytheGirlManager"
-import { Vector2 } from "../../interfaces/Vector2"
-import { getTime } from "../../utils/Functions"
+import { Vector2 } from "../../../interfaces/Vector2"
+import { getTime } from "../../../utils/Functions"
 
 export class ScytheGirlNetManager{
 

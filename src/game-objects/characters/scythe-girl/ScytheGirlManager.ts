@@ -1,8 +1,9 @@
-import { Ability } from "../../combat/Ability";
-import { QAbility } from "../../combat/scythe-girl/QAbility";
-import { WAbility } from "../../combat/scythe-girl/WAbility";
+import { Ability } from "../../../combat/Ability";
+import { QAbility } from "../../../combat/scythe-girl/QAbility";
+import { WAbility } from "../../../combat/scythe-girl/WAbility";
 import { ScytheGirl } from "./ScytheGirl";
-import { Vector2 } from "../../interfaces/Vector2";
+import { Vector2 } from "../../../interfaces/Vector2";
+import { Enemy } from "../../enemies/Enemy";
 
 export class ScytheGirlManager{
 
@@ -16,7 +17,14 @@ export class ScytheGirlManager{
         character.attacking = true
         character.idle = false
         ability.activate();
-        (ability as QAbility).doDamage(direction, character.partition, character.damage, character)
+        let enemies = new Array<Enemy>();
+        ability.selectEnemies(character.partition).forEach(k=>{
+            (ability as QAbility).worldManager.mapParitions.get(k)?.forEach((e=>{
+                if(e instanceof Enemy)
+                    enemies.push(e)
+            }))
+        });
+        (ability as QAbility).doDamage(direction, character.damage, character, enemies)
         character.hitWithQ(direction);
         clock.setTimeout(()=>{
             ability.available = true;

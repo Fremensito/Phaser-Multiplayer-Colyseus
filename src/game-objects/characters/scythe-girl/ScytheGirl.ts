@@ -1,13 +1,13 @@
-import { Ability } from "../../combat/Ability";
-import { AliveEntity } from "../AliveEntity";
-import { WorldManager } from "../../managers/WorldManager";
-import { ICharacter } from "../../interfaces/Character";
-import { IAbility } from "../../interfaces/Ability";
-import { MyRoom } from "../../rooms/MyRoom";
-import { WAbility } from "../../combat/scythe-girl/WAbility";
-import { Vector2 } from "../../interfaces/Vector2";
+import { Ability } from "../../../combat/Ability";
+import { AliveEntity } from "../../AliveEntity";
+import { WorldManager } from "../../../managers/WorldManager";
+import { ICharacter } from "../../../interfaces/Character";
+import { IAbility } from "../../../interfaces/Ability";
+import { MyRoom } from "../../../rooms/MyRoom";
+import { WAbility } from "../../../combat/scythe-girl/WAbility";
+import { Vector2 } from "../../../interfaces/Vector2";
 import SAT from "sat";
-import { SScytheGirl } from "../../schemas/SScytheGirl";
+import { SScytheGirl } from "../../../schemas/SScytheGirl";
 
 export class ScytheGirl extends AliveEntity{
     characterClass: string

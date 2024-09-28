@@ -1,4 +1,4 @@
-import { ScytheGirlManager } from "../game-objects/scythe-girl/ScytheGirlManager";
+import { ScytheGirlManager } from "../game-objects/characters/scythe-girl/ScytheGirlManager";
 
 export class CharacterManagersProvider{
 

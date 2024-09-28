@@ -3,8 +3,8 @@ import { Vector2 } from "../interfaces/Vector2"
 import { MyRoom } from "../rooms/MyRoom"
 import { CharactersManager } from "./CharactersManager"
 import { getTime } from "../utils/Functions"
-import { Enemy } from "../game-objects/Ghost"
-import { ScytheGirlNetManager } from "../game-objects/scythe-girl/ScytheGirlNetManager"
+import { BasicMeleeEnemy } from "../game-objects/enemies/BasicMeleeEnemy"
+import { ScytheGirlNetManager } from "../game-objects/characters/scythe-girl/ScytheGirlNetManager"
 
 export class NetManager{
 
@@ -37,11 +37,11 @@ export class NetManager{
         }
     }
 
-    static enemyMoves(room:MyRoom, enemy:Enemy, vector:Vector2){
+    static enemyMoves(room:MyRoom, enemy:BasicMeleeEnemy, vector:Vector2){
         room.broadcast("em", {id: enemy.id, vector: vector});
     }
 
-    static enemyReceiveDamage(room:MyRoom, enemy:Enemy, damage:number){
+    static enemyReceiveDamage(room:MyRoom, enemy:BasicMeleeEnemy, damage:number){
         room.broadcast("ed", {id:enemy.id, damage: damage})
     }
     

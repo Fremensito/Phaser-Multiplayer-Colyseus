@@ -1,6 +1,6 @@
 import { QAbility } from "../combat/scythe-girl/QAbility";
 import { WAbility } from "../combat/scythe-girl/WAbility";
-import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
+import { ScytheGirl } from "../game-objects/characters/scythe-girl/ScytheGirl";
 import { WorldManager } from "../managers/WorldManager";
 
 export function scytheGirlAbilities(worldManager: WorldManager, character:ScytheGirl){

@@ -1,7 +1,8 @@
 import { AliveEntity } from "../game-objects/AliveEntity";
-import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
-import { Enemy } from "../game-objects/Ghost";
+import { ScytheGirl } from "../game-objects/characters/scythe-girl/ScytheGirl";
+import { BasicMeleeEnemy } from "../game-objects/enemies/BasicMeleeEnemy";
 import SAT from "sat";
+import { Enemy } from "../game-objects/enemies/Enemy";
 
 export class WorldManager{
 
@@ -22,7 +23,7 @@ export class WorldManager{
     checkCollisions(delta:number){
         this.mapParitions.forEach(p => {
             p.forEach(a => {
-                if(a instanceof Enemy){
+                if(a instanceof BasicMeleeEnemy){
                     p.forEach(aa => {
                         if(a.id != aa.id && SAT.testPolygonPolygon(a.box.toPolygon(), aa.box.toPolygon())){
                             a.saveLastPosition()

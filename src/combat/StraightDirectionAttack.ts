@@ -1,10 +1,9 @@
 import { AliveEntity } from "../game-objects/AliveEntity";
 import { UIAbility } from "../interfaces/Ability";
 import { WorldManager } from "../managers/WorldManager";
-import { MyRoom } from "../rooms/MyRoom";
 import { SStraightDirectionsAbility } from "../schemas/combat/SStraightDirectionAbility";
-import { generateDebugger } from "../utils/Debugger";
 import { Ability } from "./Ability";
+import SAT from "sat";
 
 export class StraightDirectionAttack extends Ability{
     directions = {
@@ -32,9 +31,9 @@ export class StraightDirectionAttack extends Ability{
         this.right = new SAT.Box(new SAT.Vector(0, 0), this.range, this.attackWidth)
         this.left = new SAT.Box(new SAT.Vector(0, 0), this.range, this.attackWidth)
 
-        if(MyRoom.debug)
-            generateDebugger([this.up, this.down, this.right, this.left], 
-                (character.schema as SScytheGirl).q);
+        // if(MyRoom.debug)
+        //     generateDebugger([this.up, this.down, this.right, this.left], 
+        //         (character.schema as SScytheGirl).q);
     }
 
     generateDebugger(character: AliveEntity){
@@ -42,41 +41,33 @@ export class StraightDirectionAttack extends Ability{
     }
 
 
-    doDamage(direction:string, partition: string, damage: number, character: AliveEntity){
+    doDamage(direction:string, damage: number, entity: AliveEntity, entities: AliveEntity[]){
         switch(direction){
             case this.directions.up:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.up.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
+                entities.forEach(e=>{
+                    if(SAT.testPolygonPolygon(this.up.toPolygon(), e.box.toPolygon()))
+                        e.getDamage(damage, entity)
                 })
                 break;
             
             case this.directions.right:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.right.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
+                entities.forEach(e=>{
+                    if(SAT.testPolygonPolygon(this.right.toPolygon(), e.box.toPolygon()))
+                        e.getDamage(damage, entity)
                 })
                 break;
             
             case this.directions.down:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.down.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
+                entities.forEach(e=>{
+                    if(SAT.testPolygonPolygon(this.down.toPolygon(), e.box.toPolygon()))
+                        e.getDamage(damage, entity)
                 })
                 break;
             
             case this.directions.left:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.left.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
+                entities.forEach(e=>{
+                    if(SAT.testPolygonPolygon(this.left.toPolygon(), e.box.toPolygon()))
+                        e.getDamage(damage, entity)
                 })
                 break;
         }

@@ -3,13 +3,14 @@ import { RoomState } from "./schema/RoomState";
 import { getTime } from "../utils/Functions";
 import { scytheGirlAbilities } from "../utils/HabilitiesGeneratos";
 import { WorldManager } from "../managers/WorldManager";
-import { Enemy } from "../game-objects/Ghost";
+import { BasicMeleeEnemy } from "../game-objects/enemies/BasicMeleeEnemy";
 import { ICharacter } from "../interfaces/Character";
 import { IEnemy } from "../interfaces/Enemy";
 import { getRandomInt } from "../math/Math";
-import { ScytheGirl } from "../game-objects/scythe-girl/ScytheGirl";
+import { ScytheGirl } from "../game-objects/characters/scythe-girl/ScytheGirl";
 import { NetManager } from "../managers/NetManager";
 import { classes } from "../utils/Classes";
+import { Enemy } from "../game-objects/enemies/Enemy";
 
 export class MyRoom extends Room<RoomState> {
     static debug = true;
@@ -35,7 +36,7 @@ export class MyRoom extends Room<RoomState> {
         // new Enemy(0.035, 320, 330, [], "ghost7", this, this.worldManager)
 
         for(let i = 0; i < 50; i++){
-            new Enemy(0.035, 10, getRandomInt(100, 700), getRandomInt(100, 700), [], "ghost"+i.toString(), this, this.worldManager)
+            new BasicMeleeEnemy(0.035, 10, getRandomInt(100, 700), getRandomInt(100, 700), [], "ghost"+i.toString(), this, this.worldManager)
         }
 
         //Game main loop

@@ -1,20 +1,18 @@
-import { Ability } from "../combat/Ability";
-import { AliveEntity } from "./AliveEntity";
-import { WorldManager } from "../managers/WorldManager";
-import { IEnemy } from "../interfaces/Enemy";
-import { MyRoom } from "../rooms/MyRoom";
-import { getRandomInt } from "../math/Math";
-import { Vector2 } from "../interfaces/Vector2";
+import { Ability } from "../../combat/Ability";
+import { AliveEntity } from "../AliveEntity";
+import { WorldManager } from "../../managers/WorldManager";
+import { IEnemy } from "../../interfaces/Enemy";
+import { MyRoom } from "../../rooms/MyRoom";
+import { getRandomInt } from "../../math/Math";
+import { Vector2 } from "../../interfaces/Vector2";
 import SAT from "sat";
-import { NetManager } from "../managers/NetManager";
-import { SAliveEntity } from "../schemas/SAliveEntity";
+import { NetManager } from "../../managers/NetManager";
+import { SAliveEntity } from "../../schemas/SAliveEntity";
+import { Enemy } from "./Enemy";
 
-export class Enemy extends AliveEntity{
+export class BasicMeleeEnemy extends Enemy{
 
     timeout = false
-    worldManager: WorldManager
-    room:MyRoom
-    entityType: "enemy"
     testX: number;
     testY: number;
 
@@ -25,21 +23,19 @@ export class Enemy extends AliveEntity{
     constructor(speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
         worldManager: WorldManager
     ){
-        super(speed, damage, x, y, abilities,id)
-        this.worldManager = worldManager;
-        this.room = room;
-        this.health = 50;
+        super(speed, damage, x, y, abilities,id, room, worldManager)
 
-        this.worldManager.enemies.set(this.id, this)
         this.schema = new SAliveEntity();
         this.schema.id = id;
         this.schema.x = x;
         this.schema.y = y;
+
         this.testX = x;
         this.testY = y;
 
         this.setPartition()
 
+        this.health = 50;
         this.schema.health = this.health
         this.schema.type = this.entityType;
 
@@ -130,7 +126,7 @@ export class Enemy extends AliveEntity{
 
         if(this.health <= 0){
             this.dead = true
-            setTimeout((enemy:Enemy)=>{
+            setTimeout((enemy:BasicMeleeEnemy)=>{
                 console.log(this.id, "died")
                 enemy.room.state.enemies.delete(this.id)
                 enemy.worldManager.enemies.delete(this.id)
@@ -142,7 +138,7 @@ export class Enemy extends AliveEntity{
         }
     }
 
-    randomMovement(enemy: Enemy){
+    randomMovement(enemy: BasicMeleeEnemy){
         if(getRandomInt(1, 10) > 2 && !this.agro){
             enemy.idle = false;
             let x = getRandomInt(enemy.testX-80, enemy.testX+80);

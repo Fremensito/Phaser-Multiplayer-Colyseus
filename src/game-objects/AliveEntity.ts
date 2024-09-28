@@ -109,4 +109,6 @@ export class AliveEntity{
             this.schema.box[i].y = this.box.pos.y + this.box.toPolygon().calcPoints[i].y;
         }
     }
+
+    getDamage(damage:number, entity:AliveEntity){}
 }

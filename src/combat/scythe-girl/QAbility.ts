@@ -1,15 +1,14 @@
-import { Enemy } from "../../game-objects/Ghost"
 import { UIAbility } from "../../interfaces/Ability"
-import { Ability } from "../Ability"
 import { WorldManager } from "../../managers/WorldManager"
 import SAT from "sat";
-import { ScytheGirl } from "../../game-objects/scythe-girl/ScytheGirl";
+import { ScytheGirl } from "../../game-objects/characters/scythe-girl/ScytheGirl";
 import { SScytheGirl } from "../../schemas/SScytheGirl";
 import { MyRoom } from "../../rooms/MyRoom";
 import { AliveEntity } from "../../game-objects/AliveEntity";
 import { generateDebugger, updateStraightDirectionAbility } from "../../utils/Debugger";
+import { StraightDirectionAttack } from "../StraightDirectionAttack";
 
-export class QAbility extends Ability{
+export class QAbility extends StraightDirectionAttack{
     directions = {
         up: "QUp",
         right: "QRight",
@@ -27,13 +26,7 @@ export class QAbility extends Ability{
 
     constructor(character: ScytheGirl, name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
         particlesSprite:string, UI:UIAbility, range:number, worldManager: WorldManager){
-        super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range)
-        this.worldManager = worldManager;
-
-        this.up = new SAT.Box(new SAT.Vector(0, 0), this.attackWidth, this.range)
-        this.down = new SAT.Box(new SAT.Vector(0, 0), this.attackWidth, this.range)
-        this.right = new SAT.Box(new SAT.Vector(0, 0), this.range, this.attackWidth)
-        this.left = new SAT.Box(new SAT.Vector(0, 0), this.range, this.attackWidth)
+        super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range, worldManager)
 
         if(MyRoom.debug)
             generateDebugger([this.up, this.down, this.right, this.left], 
@@ -41,55 +34,49 @@ export class QAbility extends Ability{
     }
 
 
-    doDamage(direction:string, partition: string, damage: number, character: AliveEntity){
-        switch(direction){
-            case this.directions.up:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.up.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
-                })
-                break;
+    // doDamage(direction:string, partition: string, damage: number, character: AliveEntity){
+    //     switch(direction){
+    //         case this.directions.up:
+    //             this.selectEnemies(partition).forEach(k=>{
+    //                 this.worldManager.mapParitions.get(k)?.forEach(e=>{
+    //                     if(e instanceof BasicMeleeEnemy && SAT.testPolygonPolygon(this.up.toPolygon(), e.box.toPolygon()))
+    //                     e.getDamage(damage, character)
+    //                 })
+    //             })
+    //             break;
             
-            case this.directions.right:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.right.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
-                })
-                break;
+    //         case this.directions.right:
+    //             this.selectEnemies(partition).forEach(k=>{
+    //                 this.worldManager.mapParitions.get(k)?.forEach(e=>{
+    //                     if(e instanceof BasicMeleeEnemy && SAT.testPolygonPolygon(this.right.toPolygon(), e.box.toPolygon()))
+    //                     e.getDamage(damage, character)
+    //                 })
+    //             })
+    //             break;
             
-            case this.directions.down:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.down.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
-                })
-                break;
+    //         case this.directions.down:
+    //             this.selectEnemies(partition).forEach(k=>{
+    //                 this.worldManager.mapParitions.get(k)?.forEach(e=>{
+    //                     if(e instanceof BasicMeleeEnemy && SAT.testPolygonPolygon(this.down.toPolygon(), e.box.toPolygon()))
+    //                     e.getDamage(damage, character)
+    //                 })
+    //             })
+    //             break;
             
-            case this.directions.left:
-                this.selectEnemies(partition).forEach(k=>{
-                    this.worldManager.mapParitions.get(k)?.forEach(e=>{
-                        if(e instanceof Enemy && SAT.testPolygonPolygon(this.left.toPolygon(), e.box.toPolygon()))
-                        e.getDamage(damage, character)
-                    })
-                })
-                break;
-        }
-    }
+    //         case this.directions.left:
+    //             this.selectEnemies(partition).forEach(k=>{
+    //                 this.worldManager.mapParitions.get(k)?.forEach(e=>{
+    //                     if(e instanceof BasicMeleeEnemy && SAT.testPolygonPolygon(this.left.toPolygon(), e.box.toPolygon()))
+    //                     e.getDamage(damage, character)
+    //                 })
+    //             })
+    //             break;
+    //     }
+    // }
 
     update(character: AliveEntity, x:number, y: number){
         
-        this.up.pos = new SAT.Vector(x - this.attackWidth/2, y-this.range);
-
-        this.down.pos = new SAT.Vector(x - this.attackWidth/2, y)
-  
-        this.right.pos = new SAT.Vector(x, y - this.attackWidth/2)
-
-        this.left.pos = new SAT.Vector(x - this.range, y - this.attackWidth/2)
+        super.update(character, x, y)
 
         if(MyRoom.debug){
             updateStraightDirectionAbility([this.up, this.down, this.right, this.left], 
