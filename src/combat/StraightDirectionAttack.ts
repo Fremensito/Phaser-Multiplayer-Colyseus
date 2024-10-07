@@ -13,7 +13,7 @@ export class StraightDirectionAttack extends Ability{
         left: "QLeft"
     }
 
-    attackWidth = 32 //relative to the directions up or down
+    attackWidth: number;
     up: SAT.Box;
     right: SAT.Box;
     down: SAT.Box;
@@ -22,9 +22,11 @@ export class StraightDirectionAttack extends Ability{
     worldManager: WorldManager
 
     constructor(name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
-        particlesSprite:string, UI:UIAbility, range:number, worldManager: WorldManager){
+        particlesSprite:string, UI:UIAbility, range:number, attackWidth: number, worldManager: WorldManager){
         super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range)
+
         this.worldManager = worldManager;
+        this.attackWidth = attackWidth
 
         this.up = new SAT.Box(new SAT.Vector(0, 0), this.attackWidth, this.range)
         this.down = new SAT.Box(new SAT.Vector(0, 0), this.attackWidth, this.range)
@@ -35,11 +37,6 @@ export class StraightDirectionAttack extends Ability{
         //     generateDebugger([this.up, this.down, this.right, this.left], 
         //         (character.schema as SScytheGirl).q);
     }
-
-    generateDebugger(character: AliveEntity){
-
-    }
-
 
     doDamage(direction:string, damage: number, entity: AliveEntity, entities: AliveEntity[]){
         switch(direction){

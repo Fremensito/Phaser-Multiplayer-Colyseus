@@ -7,8 +7,8 @@ import { getRandomInt } from "../../math/Math";
 import { Vector2 } from "../../interfaces/Vector2";
 import SAT from "sat";
 import { NetManager } from "../../managers/NetManager";
-import { SAliveEntity } from "../../schemas/SAliveEntity";
 import { Enemy } from "./Enemy";
+import { SBasicMelee } from "../../schemas/enemies/SBasicMelee";
 
 export class BasicMeleeEnemy extends Enemy{
 
@@ -25,7 +25,7 @@ export class BasicMeleeEnemy extends Enemy{
     ){
         super(speed, damage, x, y, abilities,id, room, worldManager)
 
-        this.schema = new SAliveEntity();
+        this.schema = new SBasicMelee();
         this.schema.id = id;
         this.schema.x = x;
         this.schema.y = y;
@@ -40,7 +40,7 @@ export class BasicMeleeEnemy extends Enemy{
         this.schema.type = this.entityType;
 
         //Inserting the schema in the enemies collection state
-        this.room.state.enemies.set(this.id, this.schema)
+        this.room.state.basicMeleeEnemies.set(this.id, this.schema as SBasicMelee)
         
         setTimeout(this.randomMovement, 5000, this)
 
@@ -128,7 +128,7 @@ export class BasicMeleeEnemy extends Enemy{
             this.dead = true
             setTimeout((enemy:BasicMeleeEnemy)=>{
                 console.log(this.id, "died")
-                enemy.room.state.enemies.delete(this.id)
+                enemy.room.state.basicMeleeEnemies.delete(this.id)
                 enemy.worldManager.enemies.delete(this.id)
                 
                 let enemies = this.worldManager.mapParitions.get(this.partition)

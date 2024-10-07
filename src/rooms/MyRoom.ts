@@ -1,7 +1,7 @@
 import { Room, Client } from "@colyseus/core";
 import { RoomState } from "./schema/RoomState";
 import { getTime } from "../utils/Functions";
-import { scytheGirlAbilities } from "../utils/HabilitiesGeneratos";
+import { ghostAbilities, scytheGirlAbilities } from "../utils/HabilitiesGeneratos";
 import { WorldManager } from "../managers/WorldManager";
 import { BasicMeleeEnemy } from "../game-objects/enemies/BasicMeleeEnemy";
 import { ICharacter } from "../interfaces/Character";
@@ -36,14 +36,16 @@ export class MyRoom extends Room<RoomState> {
         // new Enemy(0.035, 320, 330, [], "ghost7", this, this.worldManager)
 
         for(let i = 0; i < 50; i++){
-            new BasicMeleeEnemy(0.035, 10, getRandomInt(100, 700), getRandomInt(100, 700), [], "ghost"+i.toString(), this, this.worldManager)
+            let enemy = new BasicMeleeEnemy(0.035, 10, getRandomInt(100, 700), getRandomInt(100, 700), [],
+             "ghost"+i.toString(), this, this.worldManager)
+            enemy.abilities = ghostAbilities(this.worldManager, enemy)
         }
 
         //Game main loop
         this.setSimulationInterval((delta)=>{
             this.worldManager.scytheGirls.forEach((s:ScytheGirl,k)=>{
                 s.update(delta);
-                s.abilities.forEach(a => a.update(s, s.position.x, s.position.y))
+                //s.abilities.forEach(a => a.update(s, s.position.x, s.position.y))
             })
 
             this.worldManager.enemies.forEach((e:Enemy)=>{

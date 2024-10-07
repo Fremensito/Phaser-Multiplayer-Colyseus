@@ -10,7 +10,7 @@ export class NetManager{
 
     static set(room: MyRoom){
         room.onMessage("wk", (client, message:Vector2) => {
-            NetManager.walk(room,client, message)
+            NetManager.walk(room, client, message)
         });
 
         room.onMessage("ping", (client)=>{

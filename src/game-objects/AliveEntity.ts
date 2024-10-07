@@ -10,7 +10,7 @@ export class AliveEntity{
     schema: SAliveEntity;
     speed:  number
     direction: SAT.Vector
-    abilities: Array<Ability>
+    abilities = new Array<Ability>()
     ability: string;
     id: string
     idle: boolean
@@ -98,6 +98,7 @@ export class AliveEntity{
         this.schema.x = this.position.x;
         this.schema.y = this.position.y;
         this.schema.idle = this.idle;
+        this.abilities.forEach(a=>a.update(this, this.position.x, this.position.y))
         if(MyRoom.debug){
             this.updateDebugger();
         }

@@ -7,7 +7,7 @@ import { MyRoom } from "../../../rooms/MyRoom";
 import { WAbility } from "../../../combat/scythe-girl/WAbility";
 import { Vector2 } from "../../../interfaces/Vector2";
 import SAT from "sat";
-import { SScytheGirl } from "../../../schemas/SScytheGirl";
+import { SScytheGirl } from "../../../schemas/characters/SScytheGirl";
 
 export class ScytheGirl extends AliveEntity{
     characterClass: string
