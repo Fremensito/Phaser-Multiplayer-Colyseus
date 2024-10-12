@@ -9,6 +9,9 @@ import SAT from "sat";
 import { NetManager } from "../../managers/NetManager";
 import { Enemy } from "./Enemy";
 import { SBasicMelee } from "../../schemas/enemies/SBasicMelee";
+import { IAbility } from "../../interfaces/Ability";
+import { EnemyStraightAttack } from "../../combat/basic-enemies/EnemyStraightAttack";
+import { EnemiesNetManager } from "./EnemiesNetManager";
 
 export class BasicMeleeEnemy extends Enemy{
 
@@ -20,10 +23,10 @@ export class BasicMeleeEnemy extends Enemy{
     agroTargets = new Array<AliveEntity>;
     agroRange = 200;
 
-    constructor(speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
+    constructor(health: number, speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
         worldManager: WorldManager
     ){
-        super(speed, damage, x, y, abilities,id, room, worldManager)
+        super(health, speed, damage, x, y, abilities,id, room, worldManager)
 
         this.schema = new SBasicMelee();
         this.schema.id = id;
@@ -35,7 +38,6 @@ export class BasicMeleeEnemy extends Enemy{
 
         this.setPartition()
 
-        this.health = 50;
         this.schema.health = this.health
         this.schema.type = this.entityType;
 
@@ -53,6 +55,8 @@ export class BasicMeleeEnemy extends Enemy{
     }
 
     getData():IEnemy{
+        let abilities = new Array<IAbility>();
+        this.abilities.forEach((a: Ability)=> abilities.push(a.getData()))
         return{
             speed: this.speed,
             x: this.position.x,
@@ -62,6 +66,7 @@ export class BasicMeleeEnemy extends Enemy{
             directionX: this.direction.x,
             directionY: this.direction.y,
             health: this.health,
+            abilities: abilities,
             id: this.id
         }
     }
@@ -85,17 +90,22 @@ export class BasicMeleeEnemy extends Enemy{
     }
 
     updateAgro(){
+
+        //Turn off agro behaviour when no targets
         if(this.agroTargets.length == 0  && this.agro){
             this.agro = false;
             setTimeout(this.randomMovement, 5000, this)
         }
         else if(this.agro){
+
+            //Update agro targets info
             let agroTargets = this.agroTargets.filter(c => {
                 return new SAT.Vector(this.position.x - c.position.x, this.position.y - c.position.y).len() <= this.agroRange
                     && !c.disconnected;
             })
             this.agroTargets = agroTargets
             
+            //Follow the nearest agro target
             if(this.agroTargets.length != 0){
                 this.agroTargets.sort((c1,c2)=>{
                     let distanceV_1 = new SAT.Vector(this.position.x - c1.position.x, this.position.y - c1.position.y).len()
@@ -104,9 +114,44 @@ export class BasicMeleeEnemy extends Enemy{
                 })
                 this.idle = false;
                 this.changeDirectionInput({x:this.agroTargets[0].position.x, y:this.agroTargets[0].position.y})
+                if(!this.attacking)
+                    this.attack(this.agroTargets[0], 
+                        this.abilities[0] as EnemyStraightAttack)
             }
         }
     }
+
+    attack(character:AliveEntity, ability:EnemyStraightAttack){
+        let action = false;
+        const agroBox = character.box.toPolygon();
+
+        if(SAT.testPolygonPolygon(ability.right.toPolygon(), agroBox)){
+            EnemiesNetManager.ghostAttack(this.room, ability.directions.right, this.id)
+            action = true
+        }
+        else if(SAT.testPolygonPolygon(ability.down.toPolygon(), agroBox)){
+            EnemiesNetManager.ghostAttack(this.room, ability.directions.down, this.id)
+            action = true
+        }
+        else if(SAT.testPolygonPolygon(ability.left.toPolygon(), agroBox)){
+            EnemiesNetManager.ghostAttack(this.room, ability.directions.left, this.id)
+            action = true
+        }
+        else if(SAT.testPolygonPolygon(ability.up.toPolygon(), agroBox)){
+            EnemiesNetManager.ghostAttack(this.room, ability.directions.up, this.id)
+            action = true
+        }
+        
+        if(action){
+            this.attacking = true
+            character.getDamage(this.damage, this)
+            
+            setTimeout(()=>{
+                this.attacking = false
+            }, (1/ability.speed)*ability.frames*1000)
+        }
+    }
+
     changeDirectionInput(vector:Vector2){
         // console.log(vector)
         // console.log(this.id)

@@ -8,24 +8,29 @@ import { WAbility } from "../../../combat/scythe-girl/WAbility";
 import { Vector2 } from "../../../interfaces/Vector2";
 import SAT from "sat";
 import { SScytheGirl } from "../../../schemas/characters/SScytheGirl";
+import { NetManager } from "../../../managers/NetManager";
+import { ScytheGirlNetManager } from "./ScytheGirlNetManager";
 
 export class ScytheGirl extends AliveEntity{
     characterClass: string
     worldManager: WorldManager
     entityType = "character";
+    room:MyRoom;
     /**
      * 
      * @param {string} characterClass 
      */
-    constructor(speed:number, damage: number, x:number, y:number, 
+    constructor(health: number, speed:number, damage: number, x:number, y:number, 
         abilities:Array<Ability>, id:string, characterClass:string, room:MyRoom , worldManager: WorldManager
     ){
-        super(speed, damage, x,y,abilities,id);
+        super(health, speed, damage, x,y,abilities,id);
         this.worldManager = worldManager;
+        this.room = room;
         this.characterClass = characterClass;
         this.schema = new SScytheGirl();
         this.schema.x = x;
         this.schema.y = y;
+        this.schema.health = this.health
 
         this.setPartition()
 
@@ -50,10 +55,12 @@ export class ScytheGirl extends AliveEntity{
         return{
             characterClass: this.characterClass,
             abilities: abilities,
+            profile: "/ui/scythe-girl/profile.png",
             speed: this.speed,
             x: this.position.x,
             y: this.position.y,
-            id: this.id
+            id: this.id,
+            health: this.health
         }
     }
 
@@ -107,5 +114,12 @@ export class ScytheGirl extends AliveEntity{
     
     hitWithQ(direction: string){
         this.abilities[0].attack(direction)
+    }
+
+    getDamage(damage: number, entity: AliveEntity): void {
+        console.log(this.id + ": damage " + damage + "; health: " + this.schema.health)
+        ScytheGirlNetManager.characterReceiveDamage(this.room, this, damage)
+        this.health -= damage;
+        this.schema.health -= damage;
     }
 }

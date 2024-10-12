@@ -7,14 +7,22 @@ import { WorldManager } from "../managers/WorldManager";
 
 export function scytheGirlAbilities(worldManager: WorldManager, character:ScytheGirl){
     return[
-        new QAbility(character, "basic attack", 1000, 12, 5, 0, "", (
+        new QAbility(character, "basic attack",
+            {
+                up: "QUp",
+                right: "QRight",
+                down: "QDown",
+                left: "QLeft"
+            },
+            1000, 12, 5, 0, "", 
             {
                 abilityWidth:32,
                 abilityHeight:32,
                 slotResource:"ui/scythe-girl/Q-slot.png", 
                 iconResource:"ui/scythe-girl/Q-icon.png"
-            }),
+            },
             26, 32, worldManager),
+            
         new WAbility("W", 3000, 12, 5, 0, "W-particles.png", 
             {
                 abilityWidth:32, 
@@ -28,6 +36,13 @@ export function scytheGirlAbilities(worldManager: WorldManager, character:Scythe
 
 export function ghostAbilities(worldManager: WorldManager, entity:BasicMeleeEnemy){
     return[
-        new EnemyStraightAttack(entity, "ghost bassic attack", 0, 12, 7, 0, "", undefined, 12, 16, worldManager)
+        new EnemyStraightAttack(entity,
+            {
+                up: "GhostUp",
+                right: "GhostRight",
+                down: "GhostDown",
+                left: "GhostLeft"
+            },
+            "ghost bassic attack", 0, 10, 7, 0, "", undefined, 12, 16, worldManager)
     ]
 }

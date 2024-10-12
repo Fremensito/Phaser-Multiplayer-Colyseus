@@ -6,6 +6,7 @@ import { Vector2 } from "../../../interfaces/Vector2";
 import { Enemy } from "../../enemies/Enemy";
 
 export class ScytheGirlManager{
+    static reconciliationDeay = 100;
 
     /**
      * 
@@ -28,7 +29,7 @@ export class ScytheGirlManager{
         character.hitWithQ(direction);
         clock.setTimeout(()=>{
             ability.available = true;
-        }, ability.cooldown - 100)
+        }, ability.cooldown - this.reconciliationDeay)
 
         clock.setTimeout(()=>{
             character.ability = "Q"
@@ -53,7 +54,7 @@ export class ScytheGirlManager{
         clock.setTimeout(()=>{
             character.abilities[1].available = true;
             (character.abilities[1] as WAbility).clear();
-        }, character.abilities[1].cooldown - 100)
+        }, character.abilities[1].cooldown - this.reconciliationDeay)
 
         clock.setTimeout(()=>{
             character.ability = ""

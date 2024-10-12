@@ -3,12 +3,14 @@ import { MyRoom } from "../../../rooms/MyRoom"
 import { ScytheGirlManager } from "./ScytheGirlManager"
 import { Vector2 } from "../../../interfaces/Vector2"
 import { getTime } from "../../../utils/Functions"
+import { ScytheGirl } from "./ScytheGirl"
 
 export class ScytheGirlNetManager{
 
     private static commands = {
         q: "sgq",
         w: "sgw",
+        getDamage: "scythe girl got damage"
     }
 
     static set(room:MyRoom){
@@ -47,5 +49,9 @@ export class ScytheGirlNetManager{
             console.log(this.commands.w + ": " + client.sessionId + " time: " + getTime())
             console.log(false)
         }
+    }
+
+    static characterReceiveDamage(room: MyRoom, character:ScytheGirl, damage: number){
+        room.broadcast(this.commands.getDamage, {id:character.id, damage: damage})
     }
 }

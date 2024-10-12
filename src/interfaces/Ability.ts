@@ -14,3 +14,10 @@ export interface IAbility{
     range: number
     UI: UIAbility;
 }
+
+export interface StraighAttackDirections{
+    down:string;
+    right:string;
+    left:string;
+    up:string;
+}

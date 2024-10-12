@@ -11,6 +11,7 @@ import { ScytheGirl } from "../game-objects/characters/scythe-girl/ScytheGirl";
 import { NetManager } from "../managers/NetManager";
 import { classes } from "../utils/Classes";
 import { Enemy } from "../game-objects/enemies/Enemy";
+import { GHOST } from "../utils/Enemies";
 
 export class MyRoom extends Room<RoomState> {
     static debug = true;
@@ -36,7 +37,7 @@ export class MyRoom extends Room<RoomState> {
         // new Enemy(0.035, 320, 330, [], "ghost7", this, this.worldManager)
 
         for(let i = 0; i < 50; i++){
-            let enemy = new BasicMeleeEnemy(0.035, 10, getRandomInt(100, 700), getRandomInt(100, 700), [],
+            let enemy = new BasicMeleeEnemy(GHOST.health, GHOST.speed, GHOST.damage, getRandomInt(100, 700), getRandomInt(100, 700), [],
              "ghost"+i.toString(), this, this.worldManager)
             enemy.abilities = ghostAbilities(this.worldManager, enemy)
         }
@@ -56,12 +57,12 @@ export class MyRoom extends Room<RoomState> {
 
         }, 10)
 
-        this.setPatchRate(16);  
+        //this.setPatchRate(33);  
     }
 
     onJoin (client: Client, options: any) {
         console.log("connected: " + client.sessionId + " time: " + getTime())
-        let character = new ScytheGirl(0.05, 10, 280, 280, [], client.sessionId, classes.scytheGirl,this, this.worldManager)
+        let character = new ScytheGirl(100, 0.05, 10, 280, 280, [], client.sessionId, classes.scytheGirl,this, this.worldManager)
         character.abilities = scytheGirlAbilities(this.worldManager, character)
 
         let characters = new Array<ICharacter>()

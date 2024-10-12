@@ -22,13 +22,14 @@ export class AliveEntity{
     boxHeight: number;
     boxWidth: number;
     box: SAT.Box;
+    hitBox: SAT.Box;
     lastPosition = {x:0, y:0}
     worldManager: WorldManager
     partition:string;
     damage: number;
     disconnected = false;
 
-    constructor(speed: number, damage: number, x: number, y:number, abilities: Array<Ability>, id: string){
+    constructor(health: number, speed: number, damage: number, x: number, y:number, abilities: Array<Ability>, id: string){
         this.position = new SAT.Vector(x, y);
         this.dead = false;
         this.idle = true;
@@ -40,6 +41,7 @@ export class AliveEntity{
         this.pointToMove = new SAT.Vector(x, y+10);
         this.idle = true
         this.attacking = false
+        this.health = health
     }
 
     generateDebugger(){

@@ -9,10 +9,10 @@ export class Enemy extends AliveEntity{
     room:MyRoom
     entityType: "enemy"
     
-    constructor(speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
+    constructor(health: number, speed: number, damage:number, x:number, y:number, abilities: Array<Ability>, id: string, room: MyRoom, 
         worldManager: WorldManager
     ){
-        super(speed, damage, x, y, abilities,id)
+        super(health, speed, damage, x, y, abilities,id)
         this.worldManager = worldManager;
         this.room = room;
 

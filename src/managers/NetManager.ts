@@ -44,5 +44,4 @@ export class NetManager{
     static enemyReceiveDamage(room:MyRoom, enemy:BasicMeleeEnemy, damage:number){
         room.broadcast("ed", {id:enemy.id, damage: damage})
     }
-    
 }

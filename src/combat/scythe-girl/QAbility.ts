@@ -1,4 +1,4 @@
-import { UIAbility } from "../../interfaces/Ability"
+import { StraighAttackDirections, UIAbility } from "../../interfaces/Ability"
 import { WorldManager } from "../../managers/WorldManager"
 import { ScytheGirl } from "../../game-objects/characters/scythe-girl/ScytheGirl";
 import { SScytheGirl } from "../../schemas/characters/SScytheGirl";
@@ -9,9 +9,11 @@ import { StraightDirectionAttack } from "../StraightDirectionAttack";
 
 export class QAbility extends StraightDirectionAttack{
 
-    constructor(character: ScytheGirl, name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
+    constructor(character: ScytheGirl, name:string, directions:StraighAttackDirections,
+        cooldown:number, speed:number, frames:number, manaCost:number, 
         particlesSprite:string, UI:UIAbility, range:number, attackWidth:number, worldManager: WorldManager){
-        super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range, attackWidth, worldManager)
+
+        super(name, directions, cooldown, speed, frames, manaCost, particlesSprite, UI, range, attackWidth, worldManager)
 
         if(MyRoom.debug)
             generateDebugger([this.up, this.down, this.right, this.left], 

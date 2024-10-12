@@ -1,18 +1,12 @@
 import { AliveEntity } from "../game-objects/AliveEntity";
-import { UIAbility } from "../interfaces/Ability";
+import { StraighAttackDirections, UIAbility } from "../interfaces/Ability";
 import { WorldManager } from "../managers/WorldManager";
 import { SStraightDirectionsAbility } from "../schemas/combat/SStraightDirectionAbility";
 import { Ability } from "./Ability";
 import SAT from "sat";
 
 export class StraightDirectionAttack extends Ability{
-    directions = {
-        up: "QUp",
-        right: "QRight",
-        down: "QDown",
-        left: "QLeft"
-    }
-
+    directions:StraighAttackDirections
     attackWidth: number;
     up: SAT.Box;
     right: SAT.Box;
@@ -21,12 +15,13 @@ export class StraightDirectionAttack extends Ability{
 
     worldManager: WorldManager
 
-    constructor(name:string, cooldown:number, speed:number, frames:number, manaCost:number, 
+    constructor(name:string, directions:StraighAttackDirections, cooldown:number, speed:number, frames:number, manaCost:number, 
         particlesSprite:string, UI:UIAbility, range:number, attackWidth: number, worldManager: WorldManager){
         super(name, cooldown, speed, frames, manaCost, particlesSprite, UI, range)
 
         this.worldManager = worldManager;
         this.attackWidth = attackWidth
+        this.directions = directions
 
         this.up = new SAT.Box(new SAT.Vector(0, 0), this.attackWidth, this.range)
         this.down = new SAT.Box(new SAT.Vector(0, 0), this.attackWidth, this.range)

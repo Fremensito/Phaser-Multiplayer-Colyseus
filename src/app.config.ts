@@ -9,6 +9,7 @@ import {join} from "node:path";
  */
 import { MyRoom } from "./rooms/MyRoom";
 import { Request } from "express";
+import { playground } from "@colyseus/playground";
 
 let server
 
@@ -26,7 +27,8 @@ export default config({
          * Define your room handlers:
          */
         gameServer.define('my_room', MyRoom);
-        //gameServer.simulateLatency(300);
+        gameServer.simulateLatency(100);
+        matchMaker.controller.exposedMethods = ["join"]
         matchMaker.create("my_room");
     },
 
@@ -113,9 +115,9 @@ export default config({
          * Use @colyseus/playground
          * (It is not recommended to expose this route in a production environment)
          */
-        // if (process.env.NODE_ENV !== "production") {
-        //     app.use("/", playground)
-        // }
+        if (process.env.NODE_ENV !== "production") {
+            app.use("/", playground)
+        }
 
         //console.log(process.env.DISCORD)
         /**
